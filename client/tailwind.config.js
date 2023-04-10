@@ -5,8 +5,14 @@ export default {
         "./src/**/**.{js,ts,jsx,tsx}",
     ],
     theme: {
-        extend: {},
+        extend: {
+            fontFamily: {
+                Montserrat: ['Montserrat', 'sans-serif'],
+                Rubik: ['Rubik', "sans-serif"],
+                Prompt : ['Prompt', 'sans-serif']
+            },
+        },
     },
-    plugins: [],
+plugins: [],
 }
 
