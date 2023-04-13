@@ -1,20 +1,19 @@
 import React,{useState} from 'react'
+import Navbar from './Navbar'
 
 export default function HomeProfile() {
-    
+    const [error,setError] = useState(false)
 
+    const handleEdit = (e)=>{
+        e.preventDefault();
+        setError(true);
+    }
     return (
         <>
         <div className="bg-gradient-to-b from-[#1565D8] to-[#9EE8FF] h-screen font-Rubik">
                 
                 <div className="w-full h-screen bg-no-repeat bg-cover " style={{backgroundImage: `url("/Wallpaper.png")`}}>
-                    <div className="w-[1920px] h-[100px] bg-white ] flex justify-between items-center">
-                        <div className="flex items-center ">
-                            <img className='ms-[56px]' src="/ChicChatLOGO.png" alt="" />
-                            <h1 className=' text-[30px] font-semibold text-[#1565D8]'>ChicChat</h1>
-                        </div>
-                        <button className='me-[51px] w-[170px] h-[59px] rounded-[50px] bg-gradient-to-b from-[#DB3D3D] via-[#FC6262] to-[#FF9595] font-semibold text-[20px] text-white font-Montserrat hover:border-[2px] hover:border-[#f02e2e]'>Log out</button>
-                    </div>
+                    <Navbar/>
                     <div className="h-[983px] flex flex-row justify-center items-center  ">
                         <div className="w-[1210px] h-[877px] rounded-l-[50px] bg-white/50 flex flex-col justify-center items-center ">
                             <div className="flex flex-col items-center">
@@ -31,7 +30,7 @@ export default function HomeProfile() {
                                     </div>
                                     <button className='w-[235px] h-[59px] rounded-[20px] bg-white flex items-center text-[20px] text-[#072653] font-normal'><img src="/addfriend icon.png" className='pe-[14px] ms-[32px]' /> Add friend</button>
                                 </div>
-                                <div className=" w-[1063px] h-[386px] rounded-[20px] bg-white mt-[22px] opacity-70">
+                                <div className=" w-[1063px] h-[386px] rounded-[20px] bg-white mt-[22px] bg-opacity-70">
                                     <div className="w-[1063px] h-[77px] flex justify-between items-center border-b-2 border-b-[#2FBCE8]">
                                         <div className="flex flex-row justify-center items-center">
                                             <img src="/Profile.png" className='ms-[38px] me-[25px] '/>
@@ -72,7 +71,55 @@ export default function HomeProfile() {
                                 </div>
                             </div>
                         </div>
-                        <div className="w-[608px] h-[877px] rounded-r-[50px] bg-white/50 border-l-2  border-l-[#1565D880] ">
+                        <div className="w-[608px] h-[877px] rounded-r-[50px] 
+                        bg-white/50 border-l-2  border-l-[#1565D880] 
+                        flex flex-col justify-center items-center
+                        ">
+                            <h1 className='text-[50px] text-[#1565D8] font-semibold'>Profile</h1>
+                            <img src="/MyProfile.png" alt="" />
+                            <h1 className='text-[40px] font-medium mb-[39px]'>Eiei</h1>
+                            <div className="grid gap-[11px]">
+                                <div className="w-[460px] h-[59px] bg-white bg-opacity-70 rounded-[20px]
+                                ps-[28px] font-medium text-[20px] text-[#072653]
+                                flex items-center
+                                ">
+                                    <label className='pe-[13px] text-[24px] text-[#000000] '>Password:</label>
+                                    {error?<input type="password" name="" id="" className='bg-transparent ps-[10px] outline-0'/>:<p className='opacity-50'>*************</p>}
+                                </div>
+                                <div className="w-[460px] h-[59px] bg-white bg-opacity-70 rounded-[20px]
+                                ps-[28px] font-medium text-[20px] text-[#072653]
+                                flex items-center
+                                ">
+                                    <label className='pe-[13px] text-[24px] text-[#000000] '>First name:</label>
+                                    {error?<input type="text" name="" id="" className='bg-transparent ps-[10px] outline-0'/>:<p className='opacity-50'>Eiei</p>}
+                                </div>
+                                <div className="w-[460px] h-[59px] bg-white bg-opacity-70 rounded-[20px]
+                                ps-[28px] font-medium text-[20px] text-[#072653]
+                                flex items-center
+                                ">
+                                    <label className='pe-[13px] text-[24px] text-[#000000] '>Last name:</label>
+                                    {error?<input type="text" name="" id="" className='bg-transparent ps-[10px] outline-0'/>:<p className='opacity-50'>Eiei</p>}
+                                </div>
+                                <div className="w-[460px] h-[59px] bg-white bg-opacity-70 rounded-[20px]
+                                ps-[28px] font-medium text-[20px] text-[#072653]
+                                flex items-center
+                                ">
+                                    <label className='pe-[13px] text-[24px] text-[#000000] '>E-mail:</label>
+                                    {error?<input type="email" name="" id="" className='bg-transparent ps-[10px] outline-0'/>:<p className='opacity-50'>eieiza555@gmail.com</p>}
+                                </div>
+                                <div className="w-[460px] h-[59px] bg-white bg-opacity-70 rounded-[20px]
+                                ps-[28px] font-medium text-[20px] text-[#072653]
+                                flex items-center
+                                ">
+                                    <label className=' pe-[13px] text-[24px] text-[#000000] '>Phone number :</label>
+                                    {error?<input type="text" name="" id="" className='bg-transparent ps-[10px] outline-0 w-[220px]'/>:<p className='opacity-50'>093-999-9999</p>}
+                                </div>
+                            </div>
+                            <button onClick={handleEdit} className='w-[260px] h-[59px] rounded-[50px] mt-[53px]
+                            bg-gradient-to-b from-[#072653] via-[#1565D8] to-[#2FBCE8]
+                            text-[20px] text-white font-semibold font-Montserrat
+                            hover:border-[2px] hover:border-[#178AAE] transition duration-300 ease-in-out hover:scale-110
+                            '>Edit your profile</button>
                         </div>
                     </div>
                 </div>
