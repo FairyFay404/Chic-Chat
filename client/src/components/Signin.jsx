@@ -2,12 +2,13 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 
 export default function Signin() {
+    const navigate = useNavigate();
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
     function toRegister(){
-        useNavigate("/Register");
+        navigate("/register");
     }
 
     function handleSignin(){
