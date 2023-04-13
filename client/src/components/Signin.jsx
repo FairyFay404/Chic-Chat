@@ -29,13 +29,13 @@ export default function Signin() {
                                     text-[#000000] font-Rubik font-medium text-[18px] leading-[120%] self-start ml-[108px] mt-[39px]
                                 ">Username</p>
                                 <input type="text" className="w-[680px] h-[76px] pl-[28px] rounded-[20px] shadow_1 mt-[11px] 
-                                    text-[#072653] font-Rubik font-medium border-[0px] focus:border-[1px] focus:border-[#178AAE] focus:outline-0
+                                    text-[#072653] font-Rubik font-medium border-[0px] focus:border-[3px] focus:border-[#178AAE] focus:outline-0
                                     " placeholder="Enter your username" onChange={e => setUsername(e.target.value)}/>
                                 <p className="after:content-['*'] after:ml-0.5 after:text-red-500
                                     text-[#000000] font-Rubik font-medium text-[18px] leading-[120%] self-start ml-[108px] mt-[28px]
                                     ">Password</p>
                                 <input type="password" className="w-[680px] h-[76px] pl-[28px] rounded-[20px] shadow_1 mt-[11px] 
-                                    text-[#072653] font-Rubik font-medium border-[0px] focus:border-[1px] focus:border-[#178AAE] focus:outline-0
+                                    text-[#072653] font-Rubik font-medium border-[0px] focus:border-[3px] focus:border-[#178AAE] focus:outline-0
                                     " placeholder="Enter your password"  onChange={e => setPassword(e.target.value)}/>
                                 <button className="w-[170px] h-[59px] rounded-[50px] mt-[90px] bg-gradient-to-b from-[#072653] from-3% via-[#1565D8] via-40% to-[#2FBCE8] to-96%
                                     text-[#FFFFFF] font-Montserrat font-semibold text-[20px] leading-[24px] cursor-pointer
