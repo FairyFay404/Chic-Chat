@@ -28,30 +28,30 @@ export default function Register() {
                                     <div className="flex flex-col justify-center items-center gap-[28px]">
                                         <div className="username">
                                         <p className='font-medium text-[18px] ps-[23px] pb-[11px] leading-[22px]'>Username</p>
-                                        <input type="text" id='box_username' className='w-[680px] h-[76px] rounded-[20px] ps-[28px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:border-[1px] focus:border-[#178AAE] focus:outline-0' placeholder='Enter your username' onChange={e=>setUsername(e.target.value)}/>
+                                        <input type="text" id='box_username' className='w-[680px] h-[76px] rounded-[20px] ps-[28px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:border-[3px] focus:border-[#178AAE] focus:outline-0' placeholder='Enter your username' onChange={e=>setUsername(e.target.value)}/>
                                     </div>
                                     <div className="password">
                                         <p className='font-medium text-[18px] ps-[23px] pb-[11px] leading-[23px]'>Password</p>
-                                        <input type="password" id='box_password' className='w-[680px] h-[76px] rounded-[20px] ps-[28px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:border-[1px] focus:border-[#178AAE] focus:outline-0' placeholder='Enter your password' onChange={e=>setPassword(e.target.value)} />
+                                        <input type="password" id='box_password' className='w-[680px] h-[76px] rounded-[20px] ps-[28px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:border-[3px] focus:border-[#178AAE] focus:outline-0' placeholder='Enter your password' onChange={e=>setPassword(e.target.value)} />
                                     </div>
                                     <div className="fullname flex flex-row justify-center items-center gap-[13px]">
                                         <div className="firstname">
                                             <p className='font-medium text-[18px] ps-[23px] pb-[11px] leading-[23px]'>First name</p>
-                                            <input type="text" id='box_firstname'className='w-[334px] h-[72px] rounded-[20px] ps-[28px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:border-[1px] focus:border-[#178AAE] focus:outline-0' placeholder='Enter your first name' onChange={e=>setFirstname(e.target.value)}/>
+                                            <input type="text" id='box_firstname'className='w-[334px] h-[72px] rounded-[20px] ps-[28px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:border-[3px] focus:border-[#178AAE] focus:outline-0' placeholder='Enter your first name' onChange={e=>setFirstname(e.target.value)}/>
                                         </div>
                                         <div className="lastname">
                                             <p className='font-medium text-[18px] ps-[23px] pb-[11px] leading-[21px]'>Last name</p>
-                                            <input type="text" id='box_lastname' className='w-[334px] h-[72px] rounded-[20px] ps-[28px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:border-[1px] focus:border-[#178AAE] focus:outline-0' placeholder='Enter your last name' onChange={e=>setLastname(e.target.value)}/>
+                                            <input type="text" id='box_lastname' className='w-[334px] h-[72px] rounded-[20px] ps-[28px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:border-[3px] focus:border-[#178AAE] focus:outline-0' placeholder='Enter your last name' onChange={e=>setLastname(e.target.value)}/>
                                         </div>
                                     </div>
                                     <div className="EmailandPhone flex flex-row justify-center items-center gap-[13px]">
                                         <div className="email">
                                             <p className='font-medium text-[18px] ps-[23px] pb-[11px] leading-[23px]'>E-mail</p>
-                                            <input type="email" id='box_email' className='w-[334px] h-[72px] rounded-[20px] ps-[28px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:border-[1px] focus:border-[#178AAE] focus:outline-0' placeholder='Enter your e-mail' onChange={e=>setEmail(e.target.value)}/>
+                                            <input type="email" id='box_email' className='w-[334px] h-[72px] rounded-[20px] ps-[28px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:border-[3px] focus:border-[#178AAE] focus:outline-0' placeholder='Enter your e-mail' onChange={e=>setEmail(e.target.value)}/>
                                         </div>
                                         <div className="phonenumber">
                                             <p className='font-medium text-[18px] ps-[23px] pb-[11px] leading-[21px]'>Phone number</p>
-                                            <input type="text" id='box_phonenumber' className='w-[334px] h-[72px] rounded-[20px] ps-[28px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:border-[1px] focus:border-[#178AAE] focus:outline-0' placeholder='Enter your phone number' onChange={e=>setPhonenumber(e.target.value)}/>
+                                            <input type="text" id='box_phonenumber' className='w-[334px] h-[72px] rounded-[20px] ps-[28px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:border-[3px] focus:border-[#178AAE] focus:outline-0' placeholder='Enter your phone number' onChange={e=>setPhonenumber(e.target.value)}/>
                                         </div>
                                     </div>
                                     <div className="w-[100%]">
