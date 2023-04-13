@@ -39,7 +39,7 @@ export default function Signin() {
                                     " placeholder="Enter your password"  onChange={e => setPassword(e.target.value)}/>
                                 <button className="w-[170px] h-[59px] rounded-[50px] mt-[90px] bg-gradient-to-b from-[#072653] from-3% via-[#1565D8] via-40% to-[#2FBCE8] to-96%
                                     text-[#FFFFFF] font-Montserrat font-semibold text-[20px] leading-[24px] cursor-pointer
-                                    hover:border-[2px] hover:border-[#178AAE]
+                                     hover:border-[#178AAE] transition duration-300 ease-in-out hover:scale-110
                                     " onClick={handleSignin}>Sign in</button>
                                 <p className="mt-[20px] text-[#696F79] font-Rubik font-normal text-[14px]">I don’t have an account? <span className="text-[#1565D8] underline cursor-pointer" onClick={toRegister}>Register </span></p>
                             </div>
