@@ -57,7 +57,7 @@ export default function Register() {
                                     <div className="w-[100%]">
                                         {error?<label id='alert-text' className='text-start text-red-700 '><img src="/error-icon.png" className='inline' /> Invalid username. Please try again. (Username must be English.)</label>:""}
                                     </div>
-                                    <button type="submit" className=' w-[170px] h-[59px] text-[20px] mt-[14.7px] font-semibold text-white font-Montserrat rounded-[50px] bg-gradient-to-b from-[#072653] via-[#1565D8] to-[#2FBCE8] hover:border-[2px] hover:border-[#178AAE]'>Register</button>
+                                    <button type="submit" className=' w-[170px] h-[59px] text-[20px] mt-[14.7px] font-semibold text-white font-Montserrat rounded-[50px] bg-gradient-to-b from-[#072653] via-[#1565D8] to-[#2FBCE8] hover:border-[2px] hover:border-[#178AAE] transition duration-300 ease-in-out hover:scale-110'>Register</button>
                                     </div>
                                 </form>
                                 <p className='font-normal text-[14px] text-[#696F79] pt-[20px] leading-[17px]'>Do you already have an account? <a href="/" className='text-[#1565D8] underline decoration-solid '>Log in</a> </p>
