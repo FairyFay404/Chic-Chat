@@ -11,8 +11,18 @@ export default {
                 Rubik: ['Rubik', "sans-serif"],
                 Prompt : ['Prompt', 'sans-serif']
             },
+            width: {
+                "10" : "10px",
+            },
+            
+        },
+        borderRadius: {
+            "20" : "20px",    
         },
     },
-plugins: [],
+plugins: [
+    require('tailwind-scrollbar'),
+],
+
 }
 
