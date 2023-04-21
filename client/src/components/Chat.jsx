@@ -1,7 +1,10 @@
 import React, { useState } from 'react'
 import Navbar from './Navbar'
 import Inbox from './subcomponents/Inbox'
+import MessageReceive from './subcomponents/MessageReceive'
+import MessageSend from './subcomponents/MessageSend'
 import Message from './Message'
+
 
 export default function Chat() {
     const [error, setError] = useState(false)
@@ -35,16 +38,16 @@ export default function Chat() {
                                             </label>
                                         </div>
                                     </div>
-                                    
+
                                     <div className="w-[700px] h-[718px] overflow-y-scroll">
-                                        <Inbox person={Party} lastmessage={"love U"} lastsender={me} count_message={20} time={"just now"} />
-                                        {/* <Inbox/>
-                                        <Inbox/>
-                                        <Inbox/>
-                                        <Inbox/>
-                                        <Inbox/>
-                                        <Inbox/>
-                                        <Inbox/> */}
+                                        <Inbox person={"Party"} lastmessage={"Hello broo"} lastsender={"me"} count_message={20} time={"just now"} />
+                                        <Inbox person={"Party"} lastmessage={"Hello broo"} lastsender={"me"} count_message={20} time={"just now"} />
+                                        <Inbox person={"Party"} lastmessage={"Hello broo"} lastsender={"me"} count_message={20} time={"just now"} />
+                                        <Inbox person={"Party"} lastmessage={"Hello broo"} lastsender={"me"} count_message={20} time={"just now"} />
+                                        <Inbox person={"Party"} lastmessage={"Hello broo"} lastsender={"me"} count_message={20} time={"just now"} />
+                                        <Inbox person={"Party"} lastmessage={"Hello broo"} lastsender={"me"} count_message={20} time={"just now"} />
+                                        <Inbox person={"Party"} lastmessage={"Hello broo"} lastsender={"me"} count_message={20} time={"just now"} />
+                                        <Inbox person={"Party"} lastmessage={"Hello broo"} lastsender={"me"} count_message={20} time={"just now"} />
                                     </div>
                                 </div>
                             </div>
@@ -63,13 +66,13 @@ export default function Chat() {
                                 </div>
 
                                 {/*Message*/}
-                                <div className=" w-[1118px] h-[650px] overflow-y-scroll">
-                                <Message/>
-                                <Message/>
-                                <Message/>
-                                <Message/>
-                                <Message/>
-                                <Message/>
+                                <div className=" w-[1118px] h-[650px] overflow-y-scroll pt-[25px]">
+                                    <MessageReceive message={"ว่าไงเมี้ยว กฟกฟกหสฟากสาส่หฟดา่ฟหสวก่ดหสฟาก่ดาสห่กดส่ฟหกดาส่ฟหสก่ดฟหส่กดสหา่กดส่หกฟดสา่ฟหกสด่หฟกสด่หฟกสด่หฟสาก่ดสฟหกดสหก่ดหส่ดหฟสาก่ดหาสฟ่"} time={"Apr 8, 2023, 8.08 AM"} />
+                                    <MessageSend message={"มีเรื่องอยากถามสักเรื่อง "} time={"Apr 8, 2023, 8.10 AM"}/>
+                                    <MessageSend message={"มีเรื่องอยากถามสักเรื่อง "} time={"Apr 8, 2023, 8.10 AM"}/>
+                                    <MessageSend message={"มีเรื่องอยากถามสักเรื่อง "} time={"Apr 8, 2023, 8.10 AM"}/>
+                                    <MessageReceive message={"ว่าไงเมี้ยว กฟกฟกหสฟากสาส่หฟดา่ฟหสวก่ดหสฟาก่ดาสห่กดส่ฟหกดาส่ฟหสก่ดฟหส่กดสหา่กดส่หกฟดสา่ฟหกสด่หฟกสด่หฟกสด่หฟสาก่ดสฟหกดสหก่ดหส่ดหฟสาก่ดหาสฟ่"} time={"Apr 8, 2023, 8.08 AM"} />
+                                    <MessageReceive message={"ว่าไงเมี้ยว กฟกฟกหสฟากสาส่หฟดา่ฟหสวก่ดหสฟาก่ดาสห่กดส่ฟหกดาส่ฟหสก่ดฟหส่กดสหา่กดส่หกฟดสา่ฟหกสด่หฟกสด่หฟกสด่หฟสาก่ดสฟหกดสหก่ดหส่ดหฟสาก่ดหาสฟ่"} time={"Apr 8, 2023, 8.08 AM"} />
                                 </div>
 
                                 {/*Text input*/}
