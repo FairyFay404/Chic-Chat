@@ -34,16 +34,15 @@ export default function Chat() {
                                     </div>
                                     
                                     <div className="w-[700px] h-[718px] overflow-y-scroll">
+                                        <Inbox person={Party} lastmessage={"love U"} lastsender={me} count_message={20} time={"just now"} />
+                                        {/* <Inbox/>
                                         <Inbox/>
                                         <Inbox/>
                                         <Inbox/>
                                         <Inbox/>
                                         <Inbox/>
-                                        <Inbox/>
-                                        <Inbox/>
-                                        <Inbox/>
+                                        <Inbox/> */}
                                     </div>
-
                                 </div>
                             </div>
 
@@ -51,7 +50,7 @@ export default function Chat() {
                                 bg-white/50 border-l-2  border-l-[#1565D880] 
                                 flex flex-col justify-center items-center 
                             ">
-                                <div className="w-[1118px] h-[120px] bg-[#2FBCE8] ] flex justify-between items-center rounded-tr-[50px] shadow_1 t-[11px]">
+                                <div className="w-[1118px] h-[120px] bg-[#2FBCE8] flex justify-between items-center rounded-tr-[50px] shadow_1 t-[11px]">
                                     <div className="flex items-center">
                                         <img className='ms-[32px] w-[100px] h-[100px]' src="/MyProfile.png" alt="" />
                                         <h1 className=' text-[32px] ms-[20px] font-medium text-[#000000]'>Username</h1>
