@@ -3,7 +3,6 @@ import Navbar from './Navbar'
 import Inbox from './subcomponents/Inbox'
 import MessageReceive from './subcomponents/MessageReceive'
 import MessageSend from './subcomponents/MessageSend'
-import Message from './Message'
 
 
 export default function Chat() {
