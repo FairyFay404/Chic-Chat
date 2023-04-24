@@ -46,7 +46,7 @@ router.post('/', async (req, res)=> {
                 const hashPassword = doc.data().password; 
                 // compare password on request and hashpassword (bcrypt)
                 // if match => res.status(200).json({status: "success", message: "Login Successfully", token: ""})
-                bcrypt.compare(req.body.password, hashPassword, async function(err, isMatch) {
+                bcrypt.compare(req.body.password, hashPassword, function(err, isMatch) {
                     if(isMatch){
                         res.status(200).json({status: "success", message: "Login Successfully", token: token});
                         return;

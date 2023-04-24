@@ -26,9 +26,6 @@ const saltRounds = 10;
 
 */
 
-
-
-
 /* for create a new user */
 /* path for conversation  */
 router.post('/', async (req,res)=> {
@@ -59,7 +56,7 @@ router.post('/', async (req,res)=> {
                     updateAt: new Date()
                 });
                 console.log("Documents ID of users "+newUser.id)
-                res.status(200).json({message: "successful register"})
+                res.status(200).json({status : "success", message: "successful register"})
                 return;
             }
             catch(err){
