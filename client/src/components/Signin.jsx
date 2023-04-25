@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export default function Signin() {
     const navigate = useNavigate();
@@ -11,8 +12,25 @@ export default function Signin() {
         navigate("/register");
     }
 
-    function handleSignin(){
-        console.log(username + password);
+    async function handleSignin(){
+        // POST request for check password is correct ? 
+        const res = await axios.post('http://localhost:3000/api/login', {
+            username: username,
+            password: password
+        });
+
+        if(res.data.status == "success"){
+            alert(res.data.message);
+            // set any token localStorage
+            console.log("token: "+res.data.token);
+            localStorage.setItem("token-access", res.data.token);
+            navigate("/home");
+        }
+        else{
+            alert(res.data.message);
+            navigate("/");
+        }
+        // console.log(username + password);
         
     }
 

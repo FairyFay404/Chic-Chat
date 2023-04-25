@@ -1,4 +1,6 @@
 import React,{useState} from 'react'
+import axios from 'axios'
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
     const [username,setUsername] = useState('');
@@ -8,11 +10,36 @@ export default function Register() {
     const [email,setEmail] = useState('');
     const [phonenumber,setPhonenumber] = useState('');
     const [error,setError] = useState(false)
-    const handleSubmit = (e)=>{
+
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e)=>{
+
         e.preventDefault();
-        if(username.length==0||password.length==0||firstname.length==0||lastname.length==0||email.length==0||phonenumber.length==0){
+        if(username.trim().length == 0 || password.trim().length==0||firstname.trim().length==0||lastname.trim().length==0||email.trim().length==0||phonenumber.trim().length==0){
             setError(true);
         }
+        else {
+            const res = await axios.post('http://localhost:3000/api/register',{
+                username: username,
+                password: password,
+                fName: firstname,
+                lName: lastname,
+                email: email,
+                phoneNum: phonenumber,
+            });
+
+            alert(res.data.message)
+            if(res.data.status == "success"){
+                navigate("/");
+            }
+            else{
+                console.log(res.err)
+                navigate("/register");
+            }
+            
+        }
+
         console.log(username,password,firstname,lastname,email,phonenumber)
     }
 
