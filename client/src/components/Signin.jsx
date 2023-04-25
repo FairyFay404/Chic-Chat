@@ -31,7 +31,7 @@ export default function Signin() {
                                 ">Username</p>
                                 <input type="text" className="w-[680px] h-[76px] pl-[28px] rounded-[20px] shadow_1 mt-[11px] 
                                     text-[#072653] font-Rubik font-medium border-[0px] focus:border-[3px] focus:border-[#178AAE] focus:outline-0
-                                    " placeholder="Enter your username" onChange={e => setUsername(e.target.value)}/>
+                                    " placeholder="Enter your username" onChange={e => setUsername(e.target.value)} autoFocus/>
                                 <p className="after:content-['*'] after:ml-0.5 after:text-red-500
                                     text-[#000000] font-Rubik font-medium text-[18px] leading-[120%] self-start ml-[108px] mt-[28px]
                                     ">Password</p>
