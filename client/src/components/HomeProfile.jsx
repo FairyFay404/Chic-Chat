@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import Navbar from './Navbar'
 import Friendbox from './subcomponents/Friendbox'
+import AddFriend from './subcomponents/AddFriend'
 
 export default function HomeProfile() {
     const [username, setUsername] = useState("")
@@ -86,9 +87,9 @@ export default function HomeProfile() {
                                     </div>
 
                                     <div className={` ${statusSearch ? "" : "hidden"}`}>
-                                        <Friendbox name={"Meaw"} />
-                                        <Friendbox name={"Aom"} />
-                                        <Friendbox name={"Party"} />
+                                        <AddFriend name={"Meaw"} isFriend={false} />
+                                        <AddFriend name={"Aom"} isFriend={true}/>
+                                        <AddFriend name={"Party"}isFriend={true} />
                                     </div>
 
                                 </div>

@@ -1,52 +1,64 @@
-import React,{useState} from 'react'
+import React, { useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from "react-router-dom";
 
 export default function Register() {
-    const [username,setUsername] = useState('');
-    const [password,setPassword] = useState('');
-    const [firstname,setFirstname] = useState('');
-    const [lastname,setLastname] = useState('');
-    const [email,setEmail] = useState('');
-    const [phonenumber,setPhonenumber] = useState('');
-    const [error,setError] = useState(false)
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [email, setEmail] = useState('');
+
+    const [error, setError] = useState(false);
+    const [textError, setTextError] = useState("");
+    const [errorUsername, setErrorUsername] = useState(false)
+    const [errorPassword, setErrorPassword] = useState(false)
+    const [errorConfirmPassword, setErrorConfirmPassword] = useState(false)
+    const [errorEmail, setErrorEmail] = useState(false)
 
     const navigate = useNavigate();
 
-    const handleSubmit = async (e)=>{
+    const handleSubmit = async (e) => {
 
         e.preventDefault();
-        if(username.trim().length == 0 || password.trim().length==0||firstname.trim().length==0||lastname.trim().length==0||email.trim().length==0||phonenumber.trim().length==0){
+        if (username.trim().length == 0 || password.trim().length == 0 || confirmPassword.trim().length == 0 || email.trim().length == 0 ){
             setError(true);
+            setTextError("Please fill out all");
+        }else if(password.trim() != confirmPassword.trim()){ // Password != confirmPassword
+            setError(true);
+            setTextError("Password and Confirm password don't match");
+            setErrorPassword(true)
+            setErrorConfirmPassword(true)
         }
         else {
-            const res = await axios.post('http://localhost:3000/api/register',{
+            const res = await axios.post('http://localhost:3000/api/register', {
                 username: username,
                 password: password,
-                fName: firstname,
-                lName: lastname,
                 email: email,
-                phoneNum: phonenumber,
             });
 
             alert(res.data.message)
-            if(res.data.status == "success"){
+            if (res.data.status == "success") {
+                setError(false);
+                setErrorUsername(false);
+                setErrorPassword(false);
+                setErrorConfirmPassword(false);
+                setErrorEmail(false)
                 navigate("/");
             }
-            else{
+            else {
                 console.log(res.err)
                 navigate("/register");
             }
-            
+
         }
 
-        console.log(username,password,firstname,lastname,email,phonenumber)
+        console.log(username, password, email)
     }
 
     return (
         <>
-        <div className="bg-gradient-to-b from-[#1565D8] to-[#9EE8FF] h-screen">
-                <div className="w-full h-screen bg-no-repeat bg-cover" style={{backgroundImage: `url("/Wallpaper.png")`}}>
+            <div className="bg-gradient-to-b from-[#1565D8] to-[#9EE8FF] h-screen">
+                <div className="w-full h-screen bg-no-repeat bg-cover" style={{ backgroundImage: `url("/Wallpaper.png")` }}>
                     <div className="flex flex-row justify-center items-center h-full">
                         <div className="w-[850px] h-[931px] rounded-[50px] bg-gradient-to-b from-[#C9F2FF] from-0% to-[#E9FAFF] to-67% shadow-[0_20px_20px_rgba(0,0,0,0.25)]">
                             <div className="flex flex-col justify-center items-center font-Rubik">
@@ -54,37 +66,25 @@ export default function Register() {
                                 <form onSubmit={handleSubmit}>
                                     <div className="flex flex-col justify-center items-center gap-[28px]">
                                         <div className="username">
-                                        <p className='font-medium text-[18px] ps-[23px] pb-[11px] leading-[22px]'>Username</p>
-                                        <input type="text" id='box_username' className='w-[680px] h-[76px] rounded-[20px] ps-[28px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:border-[3px] focus:border-[#178AAE] focus:outline-0' placeholder='Enter your username' onChange={e=>setUsername(e.target.value)}/>
-                                    </div>
-                                    <div className="password">
-                                        <p className='font-medium text-[18px] ps-[23px] pb-[11px] leading-[23px]'>Password</p>
-                                        <input type="password" id='box_password' className='w-[680px] h-[76px] rounded-[20px] ps-[28px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:border-[3px] focus:border-[#178AAE] focus:outline-0' placeholder='Enter your password' onChange={e=>setPassword(e.target.value)} />
-                                    </div>
-                                    <div className="fullname flex flex-row justify-center items-center gap-[13px]">
-                                        <div className="firstname">
-                                            <p className='font-medium text-[18px] ps-[23px] pb-[11px] leading-[23px]'>First name</p>
-                                            <input type="text" id='box_firstname'className='w-[334px] h-[72px] rounded-[20px] ps-[28px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:border-[3px] focus:border-[#178AAE] focus:outline-0' placeholder='Enter your first name' onChange={e=>setFirstname(e.target.value)}/>
+                                            <p className='font-medium text-[18px] ps-[23px] pb-[11px] leading-[22px]'>Username</p>
+                                            <input type="text" id='box_username' className={` ${errorUsername ? "border-[#FF0000] border-[3px]" : "focus:border-[3px] focus:border-[#178AAE] "} w-[680px] h-[76px] rounded-[20px] ps-[28px] pr-[30px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:outline-0`} autoFocus placeholder='Enter your username' onChange={e => setUsername(e.target.value)} />
                                         </div>
-                                        <div className="lastname">
-                                            <p className='font-medium text-[18px] ps-[23px] pb-[11px] leading-[21px]'>Last name</p>
-                                            <input type="text" id='box_lastname' className='w-[334px] h-[72px] rounded-[20px] ps-[28px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:border-[3px] focus:border-[#178AAE] focus:outline-0' placeholder='Enter your last name' onChange={e=>setLastname(e.target.value)}/>
+                                        <div className="password">
+                                            <p className='font-medium text-[18px] ps-[23px] pb-[11px] leading-[23px]'>Password</p>
+                                            <input type="password" id='box_password' className={` ${errorPassword ? "border-[#FF0000] border-[3px]" : "focus:border-[3px] focus:border-[#178AAE] "} w-[680px] h-[76px] rounded-[20px] ps-[28px] pr-[30px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:outline-0`}  placeholder='Enter your password' onChange={e => setPassword(e.target.value)} />
                                         </div>
-                                    </div>
-                                    <div className="EmailandPhone flex flex-row justify-center items-center gap-[13px]">
+                                        <div className="Confirm password">
+                                            <p className='font-medium text-[18px] ps-[23px] pb-[11px] leading-[23px]'>Confirm Password</p>
+                                            <input type="password" id='box_password' className={` ${errorConfirmPassword ? "border-[#FF0000] border-[3px]" : "focus:border-[3px] focus:border-[#178AAE] "} w-[680px] h-[76px] rounded-[20px] ps-[28px] pr-[30px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:outline-0`}  placeholder='Enter your password' onChange={e => setConfirmPassword(e.target.value)} />
+                                        </div>
                                         <div className="email">
                                             <p className='font-medium text-[18px] ps-[23px] pb-[11px] leading-[23px]'>E-mail</p>
-                                            <input type="email" id='box_email' className='w-[334px] h-[72px] rounded-[20px] ps-[28px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:border-[3px] focus:border-[#178AAE] focus:outline-0' placeholder='Enter your e-mail' onChange={e=>setEmail(e.target.value)}/>
+                                            <input type="email" id='box_email' className={` ${errorEmail ? "border-[#FF0000] border-[3px]" : "focus:border-[3px] focus:border-[#178AAE] "} w-[680px] h-[76px] rounded-[20px] ps-[28px] pr-[30px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:outline-0`}  placeholder='Enter your e-mail' onChange={e => setEmail(e.target.value)} />
                                         </div>
-                                        <div className="phonenumber">
-                                            <p className='font-medium text-[18px] ps-[23px] pb-[11px] leading-[21px]'>Phone number</p>
-                                            <input type="text" id='box_phonenumber' className='w-[334px] h-[72px] rounded-[20px] ps-[28px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:border-[3px] focus:border-[#178AAE] focus:outline-0' placeholder='Enter your phone number' onChange={e=>setPhonenumber(e.target.value)}/>
+                                        <div className={`w-full ml-[22px] ${error ? "" : "hidden"}`}>
+                                             <label id='alert-text' className='text-start text-red-700 '><img src="/error-icon.png" className='inline' /> {textError}</label>
                                         </div>
-                                    </div>
-                                    <div className="w-[100%]">
-                                        {error?<label id='alert-text' className='text-start text-red-700 '><img src="/error-icon.png" className='inline' /> Invalid username. Please try again. (Username must be English.)</label>:""}
-                                    </div>
-                                    <button type="submit" className=' w-[170px] h-[59px] text-[20px] mt-[14.7px] font-semibold text-white font-Montserrat rounded-[50px] bg-gradient-to-b from-[#072653] via-[#1565D8] to-[#2FBCE8] hover:border-[2px] hover:border-[#178AAE] transition duration-300 ease-in-out hover:scale-110'>Register</button>
+                                        <button type="submit" className={`${error ? "" : "mt-[50px]"} w-[170px] h-[59px] text-[20px] font-semibold text-white font-Montserrat rounded-[50px] bg-gradient-to-b from-[#072653] via-[#1565D8] to-[#2FBCE8] hover:border-[2px] hover:border-[#178AAE] transition duration-300 ease-in-out hover:scale-110`}>Register</button>
                                     </div>
                                 </form>
                                 <p className='font-normal text-[14px] text-[#696F79] pt-[20px] leading-[17px]'>Do you already have an account? <a href="/" className='text-[#1565D8] underline decoration-solid '>Log in</a> </p>
@@ -93,7 +93,7 @@ export default function Register() {
                     </div>
                 </div>
             </div>
-            
+
         </>
     )
 }
