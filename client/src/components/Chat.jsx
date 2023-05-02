@@ -7,7 +7,9 @@ import Chatting from './subcomponents/Chatting'
 export default function Chat() {
     const [error, setError] = useState(false)
     const [search, setSearch] = useState("")
-    const [message, setMesaage] = useState("")
+    const [focusinbox, setFocusinbox] = useState(-1)
+    const [chatIdNow, setChatIdNow] = useState();
+
 
     const handleEdit = (e) => {
         e.preventDefault();
@@ -38,14 +40,12 @@ export default function Chat() {
                                     </div>
 
                                     <div className="w-[700px] h-[718px] overflow-y-scroll">
-                                        <Inbox person={"Party"} lastmessage={"Hello broo"} lastsender={"me"} count_message={20} time={"just now"} />
-                                        <Inbox person={"Party"} lastmessage={"Hello broo"} lastsender={"me"} count_message={20} time={"just now"} />
-                                        <Inbox person={"Party"} lastmessage={"Hello broo"} lastsender={"me"} count_message={20} time={"just now"} />
-                                        <Inbox person={"Party"} lastmessage={"Hello broo"} lastsender={"me"} count_message={20} time={"just now"} />
-                                        <Inbox person={"Party"} lastmessage={"Hello broo"} lastsender={"me"} count_message={20} time={"just now"} />
-                                        <Inbox person={"Party"} lastmessage={"Hello broo"} lastsender={"me"} count_message={20} time={"just now"} />
-                                        <Inbox person={"Party"} lastmessage={"Hello broo"} lastsender={"me"} count_message={20} time={"just now"} />
-                                        <Inbox person={"Party"} lastmessage={"Hello broo"} lastsender={"me"} count_message={20} time={"just now"} />
+                                        <Inbox person={"Party"} lastmessage={"Hello broo"} lastsender={"a"} count_message={20} time={"just now"} focusinbox={focusinbox} setFocusinbox={setFocusinbox} index={"1"} setChatIdNow={setChatIdNow} chatId = {101} />
+                                        <Inbox person={"Meaw"} lastmessage={"Hello broo"} lastsender={"me"} count_message={20} time={"just now"} focusinbox={focusinbox} setFocusinbox={setFocusinbox} index={"2"} setChatIdNow={setChatIdNow} chatId = {102} />
+                                        <Inbox person={"Aom"} lastmessage={"Hello broo"} lastsender={"a"} count_message={20} time={"just now"} focusinbox={focusinbox} setFocusinbox={setFocusinbox} index={"3"} setChatIdNow={setChatIdNow} chatId = {103} />
+                                        <Inbox person={"Party"} lastmessage={"Hello broo"} lastsender={"a"} count_message={20} time={"just now"} focusinbox={focusinbox} setFocusinbox={setFocusinbox} index={"4"} setChatIdNow={setChatIdNow} chatId = {104} />
+                                        <Inbox person={"Party"} lastmessage={"Hello broo"} lastsender={"a"} count_message={20} time={"just now"} focusinbox={focusinbox} setFocusinbox={setFocusinbox} index={"5"} setChatIdNow={setChatIdNow} chatId = {105} />
+                                        <Inbox person={"Party"} lastmessage={"Hello broo"} lastsender={"a"} count_message={20} time={"just now"} focusinbox={focusinbox} setFocusinbox={setFocusinbox} index={"6"} setChatIdNow={setChatIdNow} chatId = {106} />
                                     </div>
                                 </div>
                             </div>
@@ -54,7 +54,9 @@ export default function Chat() {
                             <div className="w-[1120px] h-[877px] rounded-r-[50px] 
                                 bg-white/50 border-l-2  border-l-[#1565D880] 
                                 flex flex-col justify-center items-center ">
-                                <Chatting name={"Party"}/>         
+                                <Chatting name={"Party"} chatIdNow={chatIdNow} chatId = {101} index={1} />         
+                                <Chatting name={"Meaw"} chatIdNow={chatIdNow} chatId = {102} index={2}/>         
+                                <Chatting name={"Aom"} chatIdNow={chatIdNow} chatId = {103} index={3}/>         
                                 
                             </div>
                         </div>
