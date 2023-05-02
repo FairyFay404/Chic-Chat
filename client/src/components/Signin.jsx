@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -7,6 +7,11 @@ export default function Signin() {
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+
+    useEffect(()=>{
+        const key =localStorage.getItem("WVJ7NSg5Pqa8fYNcstKz");
+        console.log(key);
+    })
 
     function toRegister(){
         navigate("/register");

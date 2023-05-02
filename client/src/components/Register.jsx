@@ -1,6 +1,7 @@
-import React,{useState} from 'react'
+import React,{useEffect, useState} from 'react'
 import axios from 'axios'
 import { useNavigate } from "react-router-dom";
+import forge from 'node-forge';
 
 export default function Register() {
     const [username,setUsername] = useState('');
@@ -11,7 +12,21 @@ export default function Register() {
     const [phonenumber,setPhonenumber] = useState('');
     const [error,setError] = useState(false)
 
+
     const navigate = useNavigate();
+
+    const generatedUserKey = () =>{
+
+        /* RANDOM AES KEY [32 bytes = 256 bits key] */
+        const aesKey = forge.random.getBytesSync(32)
+        /* create cipher object in cbc mode AES Encryption */
+        const cipher = forge.cipher.createCipher('AES-CBC', aesKey);
+        /* craete iv (initialization vector) by start() */
+        const iv = forge.random.getBytesSync(16);
+    
+        return {cipher: cipher, aesKey: aesKey, iv: iv};
+    }
+
 
     const handleSubmit = async (e)=>{
 
@@ -31,6 +46,8 @@ export default function Register() {
 
             alert(res.data.message)
             if(res.data.status == "success"){
+                let userKeyObjString = JSON.stringify(generatedUserKey());
+                localStorage.setItem(res.data.userId, userKeyObjString);
                 navigate("/");
             }
             else{

@@ -6,6 +6,7 @@ import { database } from "./firebase-config.js"
 import conversationRoute from './routes/conversation.js';
 import registerRoute from './routes/register.js';
 import loginRoute from './routes/login.js';
+import messagesRoute from './routes/message.js';
 import cors from 'cors';
 
 
@@ -21,6 +22,7 @@ app.use(cors());
 app.use('/api/conversation', conversationRoute);
 app.use('/api/register', registerRoute);
 app.use('/api/login', loginRoute);
+app.use('/api/messages', messagesRoute);
 
 // declare port for server running
 app.listen(3000, () => {

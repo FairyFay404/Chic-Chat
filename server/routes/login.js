@@ -70,6 +70,21 @@ router.post('/', async (req, res)=> {
     }
 });
 
+router.post('/authen', async (req, res) => {
+    // get token from authorization http income headers
+    // data from authorization headers => "Barer ...token"
+    const token = req.headers.authorization.split(" ")[1];
 
+    // first waiting for decoded if token can't decode = err 
+    try{
+        const decoded = jwt.verify(token, privateKey);
+        res.status(200).json({status: "success", message: "Authentication Succcessfully!!", decoded: decoded});
+        return;
+    }catch(err){
+        res.status(422).json({status: "fail", message: "Authentication Unsuccessfully!!"});
+        return;
+    }
+
+});
 
 export default router

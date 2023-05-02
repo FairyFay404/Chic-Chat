@@ -56,7 +56,7 @@ router.post('/', async (req,res)=> {
                     updateAt: new Date()
                 });
                 console.log("Documents ID of users "+newUser.id)
-                res.status(200).json({status : "success", message: "successful register"})
+                res.status(200).json({status : "success", message: "successful register", userId: newUser.id})
                 return;
             }
             catch(err){

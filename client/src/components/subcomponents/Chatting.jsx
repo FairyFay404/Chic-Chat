@@ -3,6 +3,11 @@ import MessageReceive from './MessageReceive'
 import MessageSend from './MessageSend'
 
 export default function Chatting({name}) {
+    
+    const sendMessage = ()=>{
+
+    }
+
     return (
         <>
             {/*Navbar UserName*/}
@@ -32,7 +37,7 @@ export default function Chatting({name}) {
                             <input type="text" className="w-[880px] h-[59px] ms-[20px] pl-[50px] rounded-[20px]
                                                 text-[#072653] font-Rubik font-normal border-[0px] focus:border-[3px] focus:border-[#178AAE] focus:outline-0
                                                 " placeholder="Aa" onChange={e => setMesaage(e.target.value)} />
-                            <button><img src="/send icon.png" className='w-[53px] h-[53px] ms-[20px]' /></button>
+                            <button onClick={sendMessage}><img src="/send icon.png" className='w-[53px] h-[53px] ms-[20px]' /></button>
                         </label>
                     </dev>
                 </div>
