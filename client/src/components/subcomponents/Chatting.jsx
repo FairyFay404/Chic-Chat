@@ -37,17 +37,10 @@ export default function Chatting({ name, chatIdNow, chatId, index }) {
                     <dev>
                         <label class="relative flex flex-row justify-center items-center ">
                             <button><img src="/add icon.png" className=' w-[61px] h-[61px]' /></button>
-<<<<<<< HEAD
-                            <input type="text" className="w-[880px] h-[59px] ms-[20px] pl-[50px] rounded-[20px]
-                                                text-[#072653] font-Rubik font-normal border-[0px] focus:border-[3px] focus:border-[#178AAE] focus:outline-0
-                                                " placeholder="Aa" onChange={e => setMesaage(e.target.value)} />
-                            <button onClick={sendMessage}><img src="/send icon.png" className='w-[53px] h-[53px] ms-[20px]' /></button>
-=======
                             <input type="text" id={index} className="w-[880px] h-[59px] ms-[20px] pl-[50px] rounded-[20px]
                                 text-[#072653] font-Rubik font-normal border-[0px] focus:border-[3px] focus:border-[#178AAE] focus:outline-0
                                 " placeholder="Aa" onChange={e => setMesaage(e.target.value)}/>
                             <button><img src="/send icon.png" className='w-[53px] h-[53px] ms-[20px]' /></button>
->>>>>>> f4dd974f9efb3de932f91ec831b14d1cf0920df3
                         </label>
                     </dev>
                 </div>
