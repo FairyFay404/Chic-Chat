@@ -4,14 +4,15 @@ import { getFirestore } from "firebase/firestore";
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBAtpoQhy45kaBAnzwv16LuQdBbhVQj_58",
-  authDomain: "chic-chat-f5a56.firebaseapp.com",
-  projectId: "chic-chat-f5a56",
-  storageBucket: "chic-chat-f5a56.appspot.com",
-  messagingSenderId: "542455746483",
-  appId: "1:542455746483:web:dd4ffbf7cfc22df5c605c6",
-  measurementId: "G-2P71WM8008"
-};
+    apiKey: "AIzaSyDwU6gxNeYBiSxIr86J0I6AgMnPCA2MDxY",
+    authDomain: "chic-chat-235b1.firebaseapp.com",
+    databaseURL: "https://chic-chat-235b1-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "chic-chat-235b1",
+    storageBucket: "chic-chat-235b1.appspot.com",
+    messagingSenderId: "467299531667",
+    appId: "1:467299531667:web:513a40e3392f794896c666",
+    measurementId: "G-6RC7HLWBCN"
+}
 
 const app = initializeApp(firebaseConfig);
 

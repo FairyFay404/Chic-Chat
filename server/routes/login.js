@@ -19,7 +19,7 @@ const privateKey = "skjfnCDC4GS65DF6545df4";
 /*
 
 {
-    username: string,
+    email: string,
     password: string
 }
  
@@ -32,7 +32,7 @@ const privateKey = "skjfnCDC4GS65DF6545df4";
 /* path for login */
 router.post('/', async (req, res)=> {
     try {
-        const queryData = query(collection(database, "users"), where("username", "==", req.body.username));
+        const queryData = query(collection(database, "users"), where("email", "==", req.body.email));
 
         const querySnapShot = await  getDocs(queryData);
 
@@ -42,7 +42,7 @@ router.post('/', async (req, res)=> {
                 //console.log(doc.id, " => ", doc.data().email);
                 
                 // generated token
-                const token = jwt.sign({username: req.body.username}, privateKey, { expiresIn: '1h' });
+                const token = jwt.sign({email: req.body.email}, privateKey, { expiresIn: '1h' });
                 const hashPassword = doc.data().password; 
                 // compare password on request and hashpassword (bcrypt)
                 // if match => res.status(200).json({status: "success", message: "Login Successfully", token: ""})
@@ -52,7 +52,7 @@ router.post('/', async (req, res)=> {
                         return;
                     }
                     else{
-                        res.status(200).json({status: "fail", message: "Wrong Password!!"});
+                        res.status(200).json({status: "fail", message: "Incorrect password"});
                         return; 
                     }
                 });
@@ -60,28 +60,29 @@ router.post('/', async (req, res)=> {
             })
         }
         else {
-            res.status(422).json({status: "fail", message: "user not found"})
+            res.status(200).json({status: "fail", message: "Email not found"})
             return;
         }
     }
     catch(err){
         console.log(err);
         res.status(500).json({message: err})
+        return; 
     }
 });
 
 router.post('/authen', async (req, res) => {
     // get token from authorization http income headers
     // data from authorization headers => "Barer ...token"
-    const token = req.headers.authorization.split(" ")[1];
-
+    
     // first waiting for decoded if token can't decode = err 
     try{
+        const token = req.headers.authorization.split(" ")[1];
         const decoded = jwt.verify(token, privateKey);
         res.status(200).json({status: "success", message: "Authentication Succcessfully!!", decoded: decoded});
         return;
     }catch(err){
-        res.status(422).json({status: "fail", message: "Authentication Unsuccessfully!!"});
+        res.status(200).json({status: "fail", message: err.message});
         return;
     }
 

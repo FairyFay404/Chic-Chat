@@ -1,6 +1,7 @@
 import React,{useEffect, useState} from 'react'
 import axios from 'axios'
 import { useNavigate } from "react-router-dom";
+import { baseURL } from '../baseURL';
 import forge from 'node-forge';
 
 export default function Register() {
@@ -33,7 +34,7 @@ export default function Register() {
 
 
     const handleSubmit = async (e)=>{
-
+        const urlRegister = baseURL + "/api/register"
         e.preventDefault();
         if (username.trim().length == 0 || password.trim().length == 0 || confirmPassword.trim().length == 0 || email.trim().length == 0 ){
             setError(true);
@@ -45,7 +46,7 @@ export default function Register() {
             setErrorConfirmPassword(true)
         }
         else {
-            const res = await axios.post('http://localhost:3000/api/register', {
+            const res = await axios.post(urlRegister, {
                 username: username,
                 password: password,
                 email: email,
@@ -61,10 +62,7 @@ export default function Register() {
                 console.log(res.err)
                 navigate("/register");
             }
-
         }
-
-        console.log(username, password, email)
     }
 
     return (

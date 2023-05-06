@@ -1,32 +1,58 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation} from 'react-router-dom';
 import axios from 'axios';
+import { baseURL } from '../baseURL';
 
 export default function Signin() {
     const navigate = useNavigate();
+    const urlAuth = baseURL + "/api/login/authen"
+    const {pathname} = useLocation()
 
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
-    useEffect(()=>{
-        const key =localStorage.getItem("WVJ7NSg5Pqa8fYNcstKz");
-        console.log(key);
-    })
-
-    function toRegister(){
     const [error, setError] = useState(false);
     const [textError, setTextError] = useState("Meaw");
-    const [errorUsername, setErrorUsername] = useState(false);
+    const [errorEmail, setErrorEmail] = useState(false);
     const [errorPassword, setErrorPassword] = useState(false);
+
+    useEffect(() => {
+        const key = localStorage.getItem("WVJ7NSg5Pqa8fYNcstKz");
+        console.log(key);
+
+        axios.post(urlAuth,{            
+        },{
+            headers: {
+                'Authorization': `Basic ${localStorage.getItem("token-access")}`
+            }
+        }).then(
+            (res) => {
+                if(res.data.status == "success"){
+                    if(location.pathname == "/"){
+                        navigate("/home")
+                    }
+                }else if(res.data.message == "jwt expired"){
+                    localStorage.removeItem("token-access")
+                    navigate("/")
+                }else{
+
+                }
+            }
+        )
+
+
+    },[])
 
     function toRegister() {
         navigate("/register");
     }
 
     async function handleSignin() {
+        const urlSignin = baseURL + "/api/login"
+        const test = "http://localhost:3000/api/login"
+        console.log(email + " " + password)
         // POST request for check password is correct ? 
-        const res = await axios.post('http://localhost:3000/api/login', {
-            username: username,
+        const res = await axios.post("http://localhost:3000/api/login", {
+            email: email,
             password: password
         });
 
@@ -38,16 +64,15 @@ export default function Signin() {
             navigate("/home");
         }
         else {
-            
-            // if wrong username
+
+            // if wrong email
             // else wrong Password
 
             alert(res.data.message);
+            navigate("/")
             // navigate("/");
         }
-
     }
-
 
     return (
         <>
@@ -60,10 +85,10 @@ export default function Signin() {
                                 <p className="text-[#072653] font-Rubik font-normal leading-[19px] mt-[8px]">Welcome to ChicChat ! Let's talk !</p>
                                 <p className="after:content-['*'] after:ml-0.5 after:text-red-500
                                     text-[#000000] font-Rubik font-medium text-[18px] leading-[120%] self-start ml-[108px] mt-[39px]
-                                ">Username</p>
-                                <input type="text" className={`${errorUsername ? "border-[#FF0000] border-[3px]" : "focus:border-[3px] focus:border-[#178AAE]"} w-[680px] h-[76px] pl-[28px] pr-[30px] rounded-[20px] shadow_1 mt-[11px] 
+                                ">Email</p>
+                                <input type="text" className={`${errorEmail ? "border-[#FF0000] border-[3px]" : "focus:border-[3px] focus:border-[#178AAE]"} w-[680px] h-[76px] pl-[28px] pr-[30px] rounded-[20px] shadow_1 mt-[11px] 
                                     text-[#072653] font-Rubik font-medium border-[0px]  focus:outline-0
-                                    `} placeholder="Enter your username" onChange={e => setUsername(e.target.value)} autoFocus />
+                                    `} placeholder="Enter your email" onChange={e => setEmail(e.target.value)} autoFocus />
                                 <p className="after:content-['*'] after:ml-0.5 after:text-red-500
                                     text-[#000000] font-Rubik font-medium text-[18px] leading-[120%] self-start ml-[108px] mt-[28px]
                                     ">Password</p>

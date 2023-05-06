@@ -7,6 +7,7 @@ import conversationRoute from './routes/conversation.js';
 import registerRoute from './routes/register.js';
 import loginRoute from './routes/login.js';
 import messagesRoute from './routes/message.js';
+import updateInfoRoute from './routes/updateInfo.js'
 import cors from 'cors';
 
 
@@ -23,6 +24,8 @@ app.use('/api/conversation', conversationRoute);
 app.use('/api/register', registerRoute);
 app.use('/api/login', loginRoute);
 app.use('/api/messages', messagesRoute);
+app.use('/api/updateInfo', updateInfoRoute)
+
 
 // declare port for server running
 app.listen(3000, () => {
