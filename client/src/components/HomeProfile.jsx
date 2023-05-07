@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Navbar from './Navbar'
 import Friendbox from './subcomponents/Friendbox'
 import AddFriend from './subcomponents/AddFriend'
+import FriendPopup from './subcomponents/FriendPopup'
 
 export default function HomeProfile() {
     const [username, setUsername] = useState("Eiei")
@@ -13,8 +14,8 @@ export default function HomeProfile() {
     const [statusEdit, setStatusEdit] = useState(false);
     const [statusError, setStatusError] = useState(false);
     const [textError, setTextError] = useState("");
-    const [noti_number, setNotiNumber] = useState("5");
-
+    const [noti_number, setNotiNumber] = useState("5");    
+    const [buttonPopup, setButtonPopup] = useState(false);
 
     useEffect(()=>{
         
@@ -65,7 +66,7 @@ export default function HomeProfile() {
                                         <img src="/friend icon.png" className='pe-[14px] ' />
                                         <h1 className='text-[40px] text-white font-semibold'>Friend</h1>
                                         <div className="relative">
-                                            <button><img src="/Notification.png" /></button>
+                                            <button onClick={() => setButtonPopup(true)}><img src="/Notification.png" /></button>
                                             <div className={` ${noti_number ? "" : "hidden"}w-[35px] h-[35px] bg-[#FF3F3F] rounded-[50%] ms-[15px] text-white flex justify-center items-center absolute top-2 left-7`}>
                                                 <h1>{noti_number}</h1>
                                             </div>
@@ -101,15 +102,6 @@ export default function HomeProfile() {
                                         <Friendbox name={"Meaw"} count_message={5} />
                                         <Friendbox name={"Aom"} count_message={3} />
                                         <Friendbox name={"Party"} count_message={1} />
-                                        <Friendbox name={"JUSt"} />
-                                        <Friendbox name={"JUSt"} />
-                                        <Friendbox name={"JUSt"} />
-                                        <Friendbox name={"JUSt"} />
-                                        <Friendbox name={"JUSt"} />
-                                        <Friendbox name={"JUSt"} />
-                                        <Friendbox name={"JUSt"} />
-                                        <Friendbox name={"JUSt"} />
-                                        <Friendbox name={"JUSt"} />
                                     </div>
 
                                     <div className={` ${statusSearch ? "" : "hidden"}`}>
@@ -183,10 +175,12 @@ export default function HomeProfile() {
                             hover:border-[2px] hover:border-[#178AAE] transition duration-300 ease-in-out hover:scale-110
                             '>Edit your profile</button>}
                         </div>
+                    
                     </div>
-                </div>
+                    <FriendPopup trigger={buttonPopup} setTrigger={setButtonPopup}></FriendPopup>
+                </div> 
+                 
             </div>
-
         </>
     )
 }
