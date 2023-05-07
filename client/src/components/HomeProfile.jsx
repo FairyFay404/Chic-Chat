@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Navbar from './Navbar'
 import Friendbox from './subcomponents/Friendbox'
 import AddFriend from './subcomponents/AddFriend'
+import FriendPopup from './subcomponents/FriendPopup'
 
 export default function HomeProfile() {
     const [username, setUsername] = useState("Eiei")
@@ -13,7 +14,12 @@ export default function HomeProfile() {
     const [statusEdit, setStatusEdit] = useState(false);
     const [statusError, setStatusError] = useState(false);
     const [textError, setTextError] = useState("");
-    const [noti_number,setNotiNumber] = useState("5");
+    const [noti_number, setNotiNumber] = useState("5");    
+    const [buttonPopup, setButtonPopup] = useState(false);
+
+    useEffect(()=>{
+        
+    },[])
 
     const handleEdit = (e) => {
         e.preventDefault();
@@ -22,15 +28,15 @@ export default function HomeProfile() {
     }
     const handleSave = (e) => {
         e.preventDefault();
-        if(confirmpassword != password){
+        if (confirmpassword != password) {
             setStatusError(true)
             setTextError("Password not match. Please try again.")
-        }else{
+        } else {
             setStatusError(false)
             setStatusEdit(!statusEdit)
             //alert(username + password + email)
         }
-        
+
     }
     const changeStatus = () => {
         setStatusAddfriend(!statusAddfriend)
@@ -60,7 +66,7 @@ export default function HomeProfile() {
                                         <img src="/friend icon.png" className='pe-[14px] ' />
                                         <h1 className='text-[40px] text-white font-semibold'>Friend</h1>
                                         <div className="relative">
-                                            <button><img src="/Notification.png" /></button>
+                                            <button onClick={() => setButtonPopup(true)}><img src="/Notification.png" /></button>
                                             <div className={` ${noti_number ? "" : "hidden"}w-[35px] h-[35px] bg-[#FF3F3F] rounded-[50%] ms-[15px] text-white flex justify-center items-center absolute top-2 left-7`}>
                                                 <h1>{noti_number}</h1>
                                             </div>
@@ -93,24 +99,15 @@ export default function HomeProfile() {
 
                                 <div className="w-[1063px] h-[386px] rounded-[20px] bg-white mt-[22px] bg-opacity-70 overflow-y-scroll">
                                     <div className={` ${statusSearch ? "hidden" : ""}`}>
-                                        <Friendbox name={"Meaw"}    count_message={5}/>
-                                        <Friendbox name={"Aom"}     count_message={3}/>
-                                        <Friendbox name={"Party"}   count_message={1}/>
-                                        <Friendbox name={"JUSt"} />
-                                        <Friendbox name={"JUSt"} />
-                                        <Friendbox name={"JUSt"} />
-                                        <Friendbox name={"JUSt"} />
-                                        <Friendbox name={"JUSt"} />
-                                        <Friendbox name={"JUSt"} />
-                                        <Friendbox name={"JUSt"} />
-                                        <Friendbox name={"JUSt"} />
-                                        <Friendbox name={"JUSt"} />
+                                        <Friendbox name={"Meaw"} count_message={5} />
+                                        <Friendbox name={"Aom"} count_message={3} />
+                                        <Friendbox name={"Party"} count_message={1} />
                                     </div>
 
                                     <div className={` ${statusSearch ? "" : "hidden"}`}>
                                         <AddFriend name={"Meaw"} isFriend={false} />
-                                        <AddFriend name={"Aom"} isFriend={true}/>
-                                        <AddFriend name={"Party"}isFriend={true} />
+                                        <AddFriend name={"Aom"} isFriend={true} />
+                                        <AddFriend name={"Party"} isFriend={true} />
                                     </div>
 
                                 </div>
@@ -126,55 +123,64 @@ export default function HomeProfile() {
                             <div className="grid gap-[11px]">
                                 <div className="w-[460px] h-[59px] bg-white bg-opacity-70 rounded-[20px]
                                 ps-[28px] font-medium text-[20px] text-[#072653]
-                                flex items-center
-                                ">
+                                flex items-center">
                                     <label className='pe-[13px] text-[24px] text-[#000000] '>Username :</label>
-                                    {statusEdit ? <input type="text" className='bg-transparent ps-[10px] outline-0' value={username} onChange={e => { setUsername(e.target.value) }} />:<label className='ps-[10px] text-[20px] text-[#07265380] '>{username}</label>}
-                                    
+                                    {statusEdit ?
+                                        <input type="text" className='bg-transparent ps-[10px] outline-0' value={username}  placeholder="Enter your new username" onChange={e => { setUsername(e.target.value) }} /> :
+                                        <label className='ps-[10px] text-[20px] text-[#07265380] '>{username}</label>
+                                    }
+
                                 </div>
                                 <div className="w-[460px] h-[59px] bg-white bg-opacity-70 rounded-[20px]
                                 ps-[28px] font-medium text-[20px] text-[#072653]
-                                flex items-center
-                                ">
+                                flex items-center">
                                     <label className='pe-[13px] text-[24px] text-[#000000] '>Password :</label>
-                                    {statusEdit ? <input type="password" className='bg-transparent ps-[10px] outline-0' value={password} onChange={e => { setPassword(e.target.value) }} />:<label className='ps-[10px] text-[20px] text-[#07265380] '>{password}</label>}
+                                    {statusEdit ?
+                                        <input type="password" className='bg-transparent ps-[10px] outline-0' value={password}  placeholder="Enter your new password" onChange={e => { setPassword(e.target.value) }} /> :
+                                        <label className='ps-[10px] text-[20px] text-[#07265380] '>*********</label>
+                                    }
                                 </div>
-                                <div className={` ${statusEdit ? "w-[460px] h-[75px] bg-white bg-opacity-70 rounded-[20px] ps-[28px] font-medium text-[20px] text-[#072653] flex items-center" 
+                                <div className={` ${statusEdit ? "w-[460px] h-[75px] bg-white bg-opacity-70 rounded-[20px] ps-[28px] font-medium text-[20px] text-[#072653] flex items-center"
                                 : "hidden"}  `}
                                 >
                                     <div className="flex flex-row items-center">
                                         <label className='text-[24px] text-[#000000] w-[123px] '>Confirm Password</label>
                                         <label className='pe-[13px] text-[24px] text-[#000000] w-[10px] '>:</label>
                                     </div>
-                                    <input type="password" className='bg-transparent ps-[10px] outline-0' placeholder="Enter your password" onChange={e => { setConfirmpassword(e.target.value) }} />
+                                    <input type="password" className='bg-transparent ps-[10px] outline-0' placeholder="Enter your new password" onChange={e => { setConfirmpassword(e.target.value) }} />
                                 </div>
                                 <div className="w-[460px] h-[59px] bg-white bg-opacity-70 rounded-[20px]
                                 ps-[28px] font-medium text-[20px] text-[#072653]
                                 flex items-center
                                 ">
                                     <label className='pe-[13px] text-[24px] text-[#000000] '>E-mail :</label>
-                                    {statusEdit ? <input type="email" className='bg-transparent ps-[10px] outline-0 ' value={email} onChange={e => { setEmail(e.target.value) }} />:<label className='ps-[10px] text-[20px] text-[#07265380] '>{email}</label>}
+                                    {statusEdit ?
+                                        <input type="email" className='bg-transparent ps-[10px] outline-0 ' value={email} placeholder="Enter your new email" onChange={e => { setEmail(e.target.value) }} /> :
+                                        <label className='ps-[10px] text-[20px] text-[#07265380] '>{email}</label>
+                                    }
                                 </div>
                                 <div className={` ${statusError ? " ms-7 flex justify-start items-center" : "hidden"}  `}>
-                                    <img src="/error-icon.png"/>
+                                    <img src="/error-icon.png" />
                                     <label className='text-[#DC1414] ms-[5.28px]'>{textError}</label>
                                 </div>
-                            </div>                 
+                            </div>
                             {statusEdit ? <div className="mt-[53px] text-[20px] text-white font-semibold font-Montserrat">
-                                <button className='bg-gradient-to-b from-[#072653] via-[#1565D8] to-[#2FBCE8] w-[170px] h-[59px] rounded-[50px] mx-[15px]'onClick={handleSave}>Save</button>
+                                <button className='bg-gradient-to-b from-[#072653] via-[#1565D8] to-[#2FBCE8] w-[170px] h-[59px] rounded-[50px] mx-[15px]' onClick={handleSave}>Save</button>
                                 <button className='bg-gradient-to-b from-[#DB3D3D] via-[#FC6262] to-[#FF9595] w-[170px] h-[59px] rounded-[50px]' onClick={handleEdit}>Cancel</button>
                             </div>
-                            : 
-                            <button onClick={handleEdit} className='w-[260px] h-[59px] rounded-[50px] mt-[53px]
+                                :
+                                <button onClick={handleEdit} className='w-[260px] h-[59px] rounded-[50px] mt-[53px]
                             bg-gradient-to-b from-[#072653] via-[#1565D8] to-[#2FBCE8]
                             text-[20px] text-white font-semibold font-Montserrat
                             hover:border-[2px] hover:border-[#178AAE] transition duration-300 ease-in-out hover:scale-110
                             '>Edit your profile</button>}
                         </div>
+                    
                     </div>
-                </div>
+                    <FriendPopup trigger={buttonPopup} setTrigger={setButtonPopup}></FriendPopup>
+                </div> 
+                 
             </div>
-
         </>
     )
 }

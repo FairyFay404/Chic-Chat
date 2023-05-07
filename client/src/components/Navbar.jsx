@@ -1,14 +1,40 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom';
+import axios from "axios"
+import { baseURL } from '../baseURL';
 
 export default function Navbar() {
+    const urlAuth = baseURL + "/api/login/authen"
     const navigate = useNavigate();
+    const {pathname} = useLocation()
+
+    useEffect(()=>{
+        axios.post(urlAuth,{            
+        },{
+            headers: {
+                'Authorization': `Basic ${localStorage.getItem("token-access")}`
+            }
+        }).then(
+            (res) => {
+                if(res.data.status == "success"){
+
+                }else if(res.data.message == "jwt expired"){
+                    localStorage.removeItem("token-access")
+                    navigate("/")
+                }else{
+                    alert(res.data.message)
+                    navigate("/")
+                }
+            }
+        )
+    },[])
+
+
     
     const handleLogout = () => {
         alert("logout")
         navigate('/')
-        // Delete Token
-        // 
+        localStorage.removeItem("token-access")
     }
 
     const backToHome = () => {

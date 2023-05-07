@@ -9,6 +9,54 @@ import bcrypt from 'bcrypt';
 const router = express.Router();
 const saltRounds = 10;
 
+export const checkUsernameValidation = (username) => {
+    const isWhiteSpace = /^(?=.*\s)/;
+    if(isWhiteSpace.test(username)){
+        return "username must not contain Whitespaces."
+    }
+
+    const isThai = /[ก-๛]/;
+    if(isThai.test(username)){
+        return "username can't contain Thai language"
+    }
+    
+    const isValidLengthAndEnglishTwoSpecialChar = /^[a-zA-Z0-9_-]{4,20}$/;
+    if(!isValidLengthAndEnglishTwoSpecialChar.test(username)){
+        return "username must be 4-20 Characters Long and English character or (_) or (-)"
+    }
+
+    return "username valid"
+}
+
+export const checkPasswordValidation = (password) => {
+    const isWhiteSpace = /^(?=.*\s)/;
+    if(isWhiteSpace.test(password)){
+        return "password must not contain Whitespaces."
+    }
+
+    const isContainsUppercase = /^(?=.*[A-Z])/;
+    if(!isContainsUppercase.test(password)){
+        return "password must have at least one Uppercase Character."
+    }
+
+    const isDigit = /^(?=.*[0-9])/;
+    if(!isDigit.test(password)){
+        return "password must have at least one number."
+    }
+
+    const isThai = /[ก-๛]/;
+    if(isThai.test(password)){
+        return "password can't contain Thai language"
+    }
+    
+    const isValidLengthAndEnglishTwoSpecialChar = /^[a-zA-Z0-9_-]{8,20}$/;
+    if(!isValidLengthAndEnglishTwoSpecialChar.test(password)){
+        return "password must be 8-20 Characters Long and English character or (_) or (-)"
+    }
+
+    return "password valid"
+}
+
 /* schema for users */
 /* 
 {
@@ -31,9 +79,9 @@ const saltRounds = 10;
 router.post('/', async (req,res)=> {
 
 
-    // query username in database if it exist 
+    // query email in database if it exist 
 
-    const queryData = query(collection(database, "users"), where("username", "==", req.body.username));
+    const queryData = query(collection(database, "users"), where("email", "==", req.body.email));
 
     const querySnapShot = await getDocs(queryData);
     
@@ -42,33 +90,36 @@ router.post('/', async (req,res)=> {
     /* if users not exist in database  */
     /* hash password and then add it in database */
     if(querySnapShot.empty){
+        const message_username = checkUsernameValidation(req.body.username)
+        if(message_username != "username valid"){
+            return res.status(200).json({status : "fail", message: message_username, type : "username"})
+        }
+        const message_password = checkPasswordValidation(req.body.password)
+        if(message_password != "password valid"){
+            return res.status(200).json({status : "fail", message: message_password, type : "password" })
+        }
         bcrypt.hash(req.body.password, saltRounds, async function(err, hash) {
-
             try{
                 const newUser =  await addDoc(collection(database, "users"), {
-                    username: req.body.username,
-                    password: hash,
-                    fName: req.body.fName,
-                    lName: req.body.lName,
                     email: req.body.email,
-                    phoneNum: req.body.phoneNum,
+                    password: hash,
+                    username : req.body.username,
                     createAt: new Date(),
                     updateAt: new Date()
                 });
-                console.log("Documents ID of users "+newUser.id)
-                res.status(200).json({status : "success", message: "successful register", userId: newUser.id})
+                console.log("Documents ID of users " + newUser.id)
+                res.status(200).json({status : "success", message: "successful register"})
                 return;
             }
             catch(err){
                 console.log(err);
-                res.status(500).json({status : "fail", message: "successful register", err : err});
+                res.status(500).json({status : "fail", message: err.message});
                 return;
             }
-    
         });
     }
     else {
-        res.status(422).json({status : "fail", message: "username are exits in database"})
+        res.status(200).json({status : "fail", message: "email are exits in database", type : "email"})
         return;
     }
 
