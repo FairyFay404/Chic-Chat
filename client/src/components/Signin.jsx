@@ -46,15 +46,36 @@ export default function Signin() {
         navigate("/register");
     }
 
+    const setErrorDefault = () =>{
+        setErrorEmail(false)
+        setErrorPassword(false)
+    }
+
     async function handleSignin() {
         const urlSignin = baseURL + "/api/login"
         const test = "http://localhost:3000/api/login"
         console.log(email + " " + password)
         // POST request for check password is correct ? 
-        const res = await axios.post("http://localhost:3000/api/login", {
+        const res = await axios.post(urlSignin, {
             email: email,
             password: password
         });
+        
+        if(res.data.status == "fail"){
+             // set Default Error of each input for reset Error
+            setErrorDefault();
+
+            setError(true)
+            if(res.data.message == "Email not found"){
+                setErrorEmail(true);
+                setTextError(res.data.message)
+            }
+            if(res.data.message == "Incorrect password"){
+                setErrorPassword(true);
+                setTextError(res.data.message);
+            }
+
+        }
 
         if (res.data.status == "success") {
             alert(res.data.message);
@@ -63,15 +84,7 @@ export default function Signin() {
             localStorage.setItem("token-access", res.data.token);
             navigate("/home");
         }
-        else {
-
-            // if wrong email
-            // else wrong Password
-
-            alert(res.data.message);
-            navigate("/")
-            // navigate("/");
-        }
+    
     }
 
     return (

@@ -3,6 +3,7 @@ import { collection, addDoc, query, where, getDocs, doc, setDoc } from "firebase
 import { database } from "../firebase-config.js";
 import jwt from "jsonwebtoken";
 import bcrypt from 'bcrypt';
+import { checkUsernameValidation, checkPasswordValidation } from "./register.js";
 
 
 
@@ -16,26 +17,23 @@ router.post('/', async (req, res) => {
     const token = req.headers.authorization.split(" ")[1];
     const decoded = jwt.verify(token, privateKey);
 
-    // For check query current user information
-    const queryData = query(collection(database, "users"), where("email", "==", decoded.email)); // new email
+    // For check current user by email(decode(token) = email) 
+    const queryData = query(collection(database, "users"), where("email", "==", decoded.email)); // 
     const querySnapShot = await getDocs(queryData);
 
-    // f
+    // For check new email is used ?
     const queryData2 = query(collection(database, "users"), where("email", "==", req.body.email));
     const querySnapShot2 = await getDocs(queryData2);
 
     querySnapShot.forEach(async (user) => {
-
-        // If don't specify password
-        if (req.body.password == undefined) {
-            return res.status(200).json({ status: "fail", message: "Password not specify" })
+        const message_username = checkUsernameValidation(req.body.username)
+        if(message_username != "username valid"){
+            return res.status(200).json({status : "fail", message: message_username, type : "username"})
         }
-
-        // If don't specify email
-        if (req.body.email == undefined){
-            return res.status(200).json({ status: "fail", message: "Password not email" })
+        const message_password = checkPasswordValidation(req.body.password)
+        if(message_password != "password valid"){
+            return res.status(200).json({status : "fail", message: message_password, type : "password" })
         }
-
         if (querySnapShot2.empty){ // If email is not used
             bcrypt.hash(req.body.password, saltRounds, async function (err, hash) {
                 try {
@@ -45,7 +43,8 @@ router.post('/', async (req, res) => {
                         email: req.body.email
                     }, { merge: true })
 
-                    // give token again because change email (If email is changed -> decode token will became old email. Which it's not current )
+                    // give token for authen again since there is changing email case (If email is changed -> decode token will became old email. Which it's not current )
+                    // But same email still can authen again
                     const token = jwt.sign({ email: req.body.email }, privateKey, { expiresIn: '1h' });
                     return res.status(200).json({ status: "success", message: "Update Successful", token: token })
                 }
@@ -57,7 +56,7 @@ router.post('/', async (req, res) => {
 
             });
         }else{ // If email is used
-            return res.status(200).json({ status: "fail", message: "email is used"})
+            return res.status(200).json({ status: "fail", message: "email is used", type: "email"})
         }
 
 

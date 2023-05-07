@@ -9,21 +9,11 @@ import bcrypt from 'bcrypt';
 const router = express.Router();
 const saltRounds = 10;
 
-const checkUsernameValidation = (username) => {
+export const checkUsernameValidation = (username) => {
     const isWhiteSpace = /^(?=.*\s)/;
     if(isWhiteSpace.test(username)){
         return "username must not contain Whitespaces."
     }
-
-    // const isContainsUppercase = /^(?=.*[A-Z])/;
-    // if(isWhiteSpace.test(username)){
-    //     return res.status(200).json({status : "fail", message: "username must have at least one Uppercase Character."})
-    // }
-
-    // const isDigit = /^(?=.*[0-9])/;
-    // if(isWhiteSpace.test(username)){
-    //     return res.status(200).json({status : "fail", message: "username must have at least one number."})
-    // }
 
     const isThai = /[ก-๛]/;
     if(isThai.test(username)){
@@ -38,14 +28,13 @@ const checkUsernameValidation = (username) => {
     return "username valid"
 }
 
-const checkPasswordValidation = (password) => {
+export const checkPasswordValidation = (password) => {
     const isWhiteSpace = /^(?=.*\s)/;
     if(isWhiteSpace.test(password)){
         return "password must not contain Whitespaces."
     }
 
     const isContainsUppercase = /^(?=.*[A-Z])/;
-    console.log(password)
     if(!isContainsUppercase.test(password)){
         return "password must have at least one Uppercase Character."
     }
@@ -103,11 +92,11 @@ router.post('/', async (req,res)=> {
     if(querySnapShot.empty){
         const message_username = checkUsernameValidation(req.body.username)
         if(message_username != "username valid"){
-            return res.status(200).json({status : "fail", message: message_username})
+            return res.status(200).json({status : "fail", message: message_username, type : "username"})
         }
         const message_password = checkPasswordValidation(req.body.password)
         if(message_password != "password valid"){
-            return res.status(200).json({status : "fail", message: message_password})
+            return res.status(200).json({status : "fail", message: message_password, type : "password" })
         }
         bcrypt.hash(req.body.password, saltRounds, async function(err, hash) {
             try{
@@ -127,11 +116,10 @@ router.post('/', async (req,res)=> {
                 res.status(500).json({status : "fail", message: err.message});
                 return;
             }
-    
         });
     }
     else {
-        res.status(200).json({status : "fail", message: "email are exits in database"})
+        res.status(200).json({status : "fail", message: "email are exits in database", type : "email"})
         return;
     }
 

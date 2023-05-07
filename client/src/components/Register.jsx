@@ -1,4 +1,4 @@
-import React,{useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from "react-router-dom";
 import { baseURL } from '../baseURL';
@@ -20,7 +20,7 @@ export default function Register() {
 
     const navigate = useNavigate();
 
-    const generatedUserKey = () =>{
+    const generatedUserKey = () => {
 
         /* RANDOM AES KEY [32 bytes = 256 bits key] */
         const aesKey = forge.random.getBytesSync(32)
@@ -28,18 +28,24 @@ export default function Register() {
         const cipher = forge.cipher.createCipher('AES-CBC', aesKey);
         /* craete iv (initialization vector) by start() */
         const iv = forge.random.getBytesSync(16);
-    
-        return {cipher: cipher, aesKey: aesKey, iv: iv};
+
+        return { cipher: cipher, aesKey: aesKey, iv: iv };
     }
 
+    const setErrorDefault = () => {
+        setErrorEmail(false)
+        setErrorPassword(false)
+        setErrorConfirmPassword(false)
+        setErrorUsername(false)
+    }
 
-    const handleSubmit = async (e)=>{
+    const handleSubmit = async (e) => {
         const urlRegister = baseURL + "/api/register"
         e.preventDefault();
-        if (username.trim().length == 0 || password.trim().length == 0 || confirmPassword.trim().length == 0 || email.trim().length == 0 ){
+        if (username.trim().length == 0 || password.trim().length == 0 || confirmPassword.trim().length == 0 || email.trim().length == 0) {
             setError(true);
             setTextError("Please fill out all");
-        }else if(password.trim() != confirmPassword.trim()){ // Password != confirmPassword
+        } else if (password.trim() != confirmPassword.trim()) { // Password != confirmPassword
             setError(true);
             setTextError("Password and Confirm password don't match");
             setErrorPassword(true)
@@ -52,18 +58,29 @@ export default function Register() {
                 email: email,
             });
 
-            alert(res.data.message)
-            if(res.data.status == "success"){
+            if (res.data.status == "fail") {
+                // set Default Error of each input for reset Error
+                setErrorDefault();
+
+                setError(true);
+                if (res.data.type == "username") {
+                    setErrorUsername(true)
+                } else if (res.data.type == "password") {
+                    setErrorPassword(true)
+                }else if (res.data.type == "email") {
+                    setErrorEmail(true)
+                }
+                setTextError(res.data.message);
+            }
+            if (res.data.status == "success") {
                 let userKeyObjString = JSON.stringify(generatedUserKey());
                 localStorage.setItem(res.data.userId, userKeyObjString);
+                alert(res.data.message)
                 navigate("/");
-            }
-            else {
-                console.log(res.err)
-                navigate("/register");
             }
         }
     }
+
 
     return (
         <>
@@ -81,18 +98,18 @@ export default function Register() {
                                         </div>
                                         <div className="password">
                                             <p className='font-medium text-[18px] ps-[23px] pb-[11px] leading-[23px]'>Password</p>
-                                            <input type="password" id='box_password' className={` ${errorPassword ? "border-[#FF0000] border-[3px]" : "focus:border-[3px] focus:border-[#178AAE] "} w-[680px] h-[76px] rounded-[20px] ps-[28px] pr-[30px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:outline-0`}  placeholder='Enter your password' onChange={e => setPassword(e.target.value)} />
+                                            <input type="password" id='box_password' className={` ${errorPassword ? "border-[#FF0000] border-[3px]" : "focus:border-[3px] focus:border-[#178AAE] "} w-[680px] h-[76px] rounded-[20px] ps-[28px] pr-[30px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:outline-0`} placeholder='Enter your password' onChange={e => setPassword(e.target.value)} />
                                         </div>
                                         <div className="Confirm password">
                                             <p className='font-medium text-[18px] ps-[23px] pb-[11px] leading-[23px]'>Confirm Password</p>
-                                            <input type="password" id='box_password' className={` ${errorConfirmPassword ? "border-[#FF0000] border-[3px]" : "focus:border-[3px] focus:border-[#178AAE] "} w-[680px] h-[76px] rounded-[20px] ps-[28px] pr-[30px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:outline-0`}  placeholder='Enter your password' onChange={e => setConfirmPassword(e.target.value)} />
+                                            <input type="password" id='box_password' className={` ${errorConfirmPassword ? "border-[#FF0000] border-[3px]" : "focus:border-[3px] focus:border-[#178AAE] "} w-[680px] h-[76px] rounded-[20px] ps-[28px] pr-[30px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:outline-0`} placeholder='Enter your password' onChange={e => setConfirmPassword(e.target.value)} />
                                         </div>
                                         <div className="email">
                                             <p className='font-medium text-[18px] ps-[23px] pb-[11px] leading-[23px]'>E-mail</p>
-                                            <input type="email" id='box_email' className={` ${errorEmail ? "border-[#FF0000] border-[3px]" : "focus:border-[3px] focus:border-[#178AAE] "} w-[680px] h-[76px] rounded-[20px] ps-[28px] pr-[30px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:outline-0`}  placeholder='Enter your e-mail' onChange={e => setEmail(e.target.value)} />
+                                            <input type="email" id='box_email' className={` ${errorEmail ? "border-[#FF0000] border-[3px]" : "focus:border-[3px] focus:border-[#178AAE] "} w-[680px] h-[76px] rounded-[20px] ps-[28px] pr-[30px] shadow-[0_10px_10px_rgba(0,0,0,0.25)] placeholder:font-medium focus:outline-0`} placeholder='Enter your e-mail' onChange={e => setEmail(e.target.value)} />
                                         </div>
                                         <div className={`w-full ml-[22px] ${error ? "" : "hidden"}`}>
-                                             <label id='alert-text' className='text-start text-red-700 '><img src="/error-icon.png" className='inline' /> {textError}</label>
+                                            <label id='alert-text' className='text-start text-red-700 '><img src="/error-icon.png" className='inline' /> {textError}</label>
                                         </div>
                                         <button type="submit" className={`${error ? "" : "mt-[50px]"} w-[170px] h-[59px] text-[20px] font-semibold text-white font-Montserrat rounded-[50px] bg-gradient-to-b from-[#072653] via-[#1565D8] to-[#2FBCE8] hover:border-[2px] hover:border-[#178AAE] transition duration-300 ease-in-out hover:scale-110`}>Register</button>
                                     </div>
