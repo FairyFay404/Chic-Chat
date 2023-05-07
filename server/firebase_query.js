@@ -41,7 +41,6 @@ export const findUserDocById = async (id) => {
             id: queryDocIdSnapshot.id, ...queryDocIdSnapshot.data()
         }
 
-        console.log(userDoc);
         // it return array like this [{id: ..., email: ...}, {id:..., email: ...},]
         return userDoc;
     }
