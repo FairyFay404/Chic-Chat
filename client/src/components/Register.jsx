@@ -23,7 +23,7 @@ export default function Register() {
     const generatedUserKey = () => {
 
         /* RANDOM AES KEY [32 bytes = 256 bits key] */
-        const aesKey = forge.random.getBytesSync(32)
+        const aesKey = forge.random.getBytesSync(32);
         /* create cipher object in cbc mode AES Encryption */
         const cipher = forge.cipher.createCipher('AES-CBC', aesKey);
         /* craete iv (initialization vector) by start() */
