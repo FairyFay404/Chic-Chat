@@ -3,6 +3,8 @@ import Navbar from './Navbar'
 import Friendbox from './subcomponents/Friendbox'
 import AddFriend from './subcomponents/AddFriend'
 import FriendPopup from './subcomponents/FriendPopup'
+import axios from 'axios'
+import { baseURL } from '../baseURL'
 
 export default function HomeProfile() {
     const [username, setUsername] = useState("Eiei")
@@ -14,29 +16,61 @@ export default function HomeProfile() {
     const [statusEdit, setStatusEdit] = useState(false);
     const [statusError, setStatusError] = useState(false);
     const [textError, setTextError] = useState("");
-    const [noti_number, setNotiNumber] = useState("5");    
+    const [noti_number, setNotiNumber] = useState("5");
     const [buttonPopup, setButtonPopup] = useState(false);
 
-    useEffect(()=>{
-        
-    },[])
+    const [defaultUser, setDefaultUser] = useState({})
+
+    const urlgetInfo = baseURL + "/api/user/getInfo"
+    const urlupdateInfo = baseURL + "/api/user/updateInfo"
+    useEffect(() => {
+        axios.post(urlgetInfo, {}, {
+            headers: {
+                'Authorization': `Basic ${localStorage.getItem("token-access")}`
+            }
+        }).then((res) => {
+            setDefaultUser(res.data.user)
+            setUsername(res.data.user.username)
+            setPassword(res.data.user.password)
+            setEmail(res.data.user.email)
+            console.log(res.data.user.username)
+        })
+    }, [])
 
     const handleEdit = (e) => {
         e.preventDefault();
         setStatusEdit(!statusEdit)
         setStatusError(false)
     }
+
     const handleSave = (e) => {
         e.preventDefault();
+        console.log(username + password + email)
+
         if (confirmpassword != password) {
             setStatusError(true)
             setTextError("Password not match. Please try again.")
         } else {
-            setStatusError(false)
-            setStatusEdit(!statusEdit)
-            //alert(username + password + email)
+            axios.post(urlupdateInfo, {
+                username: username,
+                password: password,
+                email: email
+            }, {
+                headers: {
+                    'Authorization': `Basic ${localStorage.getItem("token-access")}`
+                }
+            }).then((res) => {
+                if (res.data.status == "fail") {
+                    setStatusError(true)
+                    setTextError(res.data.message)
+                } else {
+                    alert(res.data.message)
+                    localStorage.removeItem("token-access")
+                    localStorage.setItem("token-access", res.data.token);
+                    location.reload()
+                }
+            })
         }
-
     }
     const changeStatus = () => {
         setStatusAddfriend(!statusAddfriend)
@@ -119,15 +153,15 @@ export default function HomeProfile() {
                         ">
                             <h1 className='text-[50px] text-[#1565D8] font-semibold'>Profile</h1>
                             <img src="/MyProfile.png" alt="" />
-                            <h1 className='text-[40px] font-medium mb-[39px]'>Eiei</h1>
+                            <h1 className='text-[40px] font-medium mb-[39px]'>{defaultUser.username}</h1>
                             <div className="grid gap-[11px]">
                                 <div className="w-[460px] h-[59px] bg-white bg-opacity-70 rounded-[20px]
                                 ps-[28px] font-medium text-[20px] text-[#072653]
                                 flex items-center">
                                     <label className='pe-[13px] text-[24px] text-[#000000] '>Username :</label>
                                     {statusEdit ?
-                                        <input type="text" className='bg-transparent ps-[10px] outline-0' value={username}  placeholder="Enter your new username" onChange={e => { setUsername(e.target.value) }} /> :
-                                        <label className='ps-[10px] text-[20px] text-[#07265380] '>{username}</label>
+                                        <input type="text" className='bg-transparent ps-[10px] outline-0' value={username} placeholder="Enter your new username" onChange={e => { setUsername(e.target.value) }} /> :
+                                        <label className='ps-[10px] text-[20px] text-[#07265380] '>{defaultUser.username}</label>
                                     }
 
                                 </div>
@@ -136,12 +170,12 @@ export default function HomeProfile() {
                                 flex items-center">
                                     <label className='pe-[13px] text-[24px] text-[#000000] '>Password :</label>
                                     {statusEdit ?
-                                        <input type="password" className='bg-transparent ps-[10px] outline-0' value={password}  placeholder="Enter your new password" onChange={e => { setPassword(e.target.value) }} /> :
-                                        <label className='ps-[10px] text-[20px] text-[#07265380] '>*********</label>
+                                        <input type="password" className='bg-transparent ps-[10px] outline-0' value={password} placeholder="Enter your new password" onChange={e => { setPassword(e.target.value) }} /> :
+                                        <input type="password" className='bg-transparent ps-[10px] text-[#07265380] outline-0' value={defaultUser.password} placeholder="Enter your new password" onChange={e => { setPassword(e.target.value) }} disabled />
                                     }
                                 </div>
                                 <div className={` ${statusEdit ? "w-[460px] h-[75px] bg-white bg-opacity-70 rounded-[20px] ps-[28px] font-medium text-[20px] text-[#072653] flex items-center"
-                                : "hidden"}  `}
+                                    : "hidden"}  `}
                                 >
                                     <div className="flex flex-row items-center">
                                         <label className='text-[24px] text-[#000000] w-[123px] '>Confirm Password</label>
@@ -156,7 +190,7 @@ export default function HomeProfile() {
                                     <label className='pe-[13px] text-[24px] text-[#000000] '>E-mail :</label>
                                     {statusEdit ?
                                         <input type="email" className='bg-transparent ps-[10px] outline-0 ' value={email} placeholder="Enter your new email" onChange={e => { setEmail(e.target.value) }} /> :
-                                        <label className='ps-[10px] text-[20px] text-[#07265380] '>{email}</label>
+                                        <label className='ps-[10px] text-[20px] text-[#07265380] '>{defaultUser.email}</label>
                                     }
                                 </div>
                                 <div className={` ${statusError ? " ms-7 flex justify-start items-center" : "hidden"}  `}>
@@ -164,22 +198,22 @@ export default function HomeProfile() {
                                     <label className='text-[#DC1414] ms-[5.28px]'>{textError}</label>
                                 </div>
                             </div>
-                            {statusEdit ? <div className="mt-[53px] text-[20px] text-white font-semibold font-Montserrat">
-                                <button className='bg-gradient-to-b from-[#072653] via-[#1565D8] to-[#2FBCE8] w-[170px] h-[59px] rounded-[50px] mx-[15px]' onClick={handleSave}>Save</button>
-                                <button className='bg-gradient-to-b from-[#DB3D3D] via-[#FC6262] to-[#FF9595] w-[170px] h-[59px] rounded-[50px]' onClick={handleEdit}>Cancel</button>
-                            </div>
-                                :
+                            {statusEdit ?
+                                <div className="mt-[53px] text-[20px] text-white font-semibold font-Montserrat">
+                                    <button className='bg-gradient-to-b from-[#072653] via-[#1565D8] to-[#2FBCE8] w-[170px] h-[59px] rounded-[50px] mx-[15px]' onClick={handleSave}>Save</button>
+                                    <button className='bg-gradient-to-b from-[#DB3D3D] via-[#FC6262] to-[#FF9595] w-[170px] h-[59px] rounded-[50px]' onClick={handleEdit}>Cancel</button>
+                                </div>:
                                 <button onClick={handleEdit} className='w-[260px] h-[59px] rounded-[50px] mt-[53px]
                             bg-gradient-to-b from-[#072653] via-[#1565D8] to-[#2FBCE8]
                             text-[20px] text-white font-semibold font-Montserrat
                             hover:border-[2px] hover:border-[#178AAE] transition duration-300 ease-in-out hover:scale-110
                             '>Edit your profile</button>}
                         </div>
-                    
+
                     </div>
                     <FriendPopup trigger={buttonPopup} setTrigger={setButtonPopup}></FriendPopup>
-                </div> 
-                 
+                </div>
+
             </div>
         </>
     )
