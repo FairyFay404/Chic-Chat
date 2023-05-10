@@ -16,13 +16,13 @@ export default function Signin() {
     const [errorPassword, setErrorPassword] = useState(false);
 
     useEffect(() => {
-        const key = localStorage.getItem("WVJ7NSg5Pqa8fYNcstKz");
+        const key = sessionStorage.getItem("WVJ7NSg5Pqa8fYNcstKz");
         console.log(key);
 
         axios.post(urlAuth,{            
         },{
             headers: {
-                'Authorization': `Basic ${localStorage.getItem("token-access")}`
+                'Authorization': `Basic ${sessionStorage.getItem("token-access")}`
             }
         }).then(
             (res) => {
@@ -31,7 +31,7 @@ export default function Signin() {
                         navigate("/home")
                     }
                 }else if(res.data.message == "jwt expired"){
-                    localStorage.removeItem("token-access")
+                    sessionStorage.removeItem("token-access")
                     navigate("/")
                 }else{
 
@@ -79,9 +79,10 @@ export default function Signin() {
 
         if (res.data.status == "success") {
             alert(res.data.message);
-            // set any token localStorage
+            // set any token sessionStorage
             console.log("token: " + res.data.token);
-            localStorage.setItem("token-access", res.data.token);
+            sessionStorage.setItem("token-access", res.data.token);
+            sessionStorage.setItem("user-email", res.data.email);
             navigate("/home");
         }
     

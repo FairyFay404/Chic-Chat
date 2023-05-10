@@ -1,10 +1,10 @@
 import forge from 'node-forge';
 
 /* format of users and key is "userId AESKEY"*/
-/* we will use format key in localStorage.setItem(userId, keyObj) */
+/* we will use format key in sessionStorage.setItem(userId, keyObj) */
 /* keyObj = "{cipher: cipher, aesKey: aesKey, iv: iv}" */
 /* before use you should parse string to Json first */
-/* example keyObjString = localStorage.getItem(userId) */
+/* example keyObjString = sessionStorage.getItem(userId) */
 /* keyObj = JSON.parse(keyObjString) */
 
 /* function for add user key in arrays */

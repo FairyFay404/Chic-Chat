@@ -74,7 +74,7 @@ export default function Register() {
             }
             if (res.data.status == "success") {
                 let userKeyObjString = JSON.stringify(generatedUserKey());
-                localStorage.setItem(res.data.userId, userKeyObjString);
+                sessionStorage.setItem(res.data.userId, userKeyObjString);
                 alert(res.data.message)
                 navigate("/");
             }

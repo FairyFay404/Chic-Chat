@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState,useRef } from 'react'
 import Navbar from './Navbar'
 import Inbox from './subcomponents/Inbox'
 import Chatting from './subcomponents/Chatting'
+import {io} from "socket.io-client";
 
 
 export default function Chat() {
@@ -9,8 +10,33 @@ export default function Chat() {
     const [search, setSearch] = useState("")
     const [focusinbox, setFocusinbox] = useState(-1)
     const [chatIdNow, setChatIdNow] = useState();
+    const socket = useRef();
+    const [userId, setUserId] = useState(null);
 
+    /* first time when this page is rendering */
+    useEffect(()=>{
 
+        socket.current = io("http://localhost:8900");
+        /* check first is user-email exist ? */
+        if(sessionStorage.getItem("user-email") != null){
+            setUserId(sessionStorage.getItem("user-email"));
+        }
+
+    }, []);
+
+    useEffect(()=>{
+
+        if(userId != null){
+            socket.current.emit("addUser", userId);
+        }
+
+        socket.current.on("getUser", users=>{
+            console.log(users);
+        });
+
+    },[userId]);
+
+    
     const handleEdit = (e) => {
         e.preventDefault();
         setError(true);
