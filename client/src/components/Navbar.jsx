@@ -22,9 +22,10 @@ export default function Navbar() {
                     sessionStorage.removeItem("token-access")
                     navigate("/")
                 }else{
-                    alert(res.data.message)
                     navigate("/")
+                    alert("Please login before")
                 }
+                console.log(res.data.message)
             }
         )
     },[])

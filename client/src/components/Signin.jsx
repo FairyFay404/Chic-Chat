@@ -53,8 +53,6 @@ export default function Signin() {
 
     async function handleSignin() {
         const urlSignin = baseURL + "/api/login"
-        const test = "http://localhost:3000/api/login"
-        console.log(email + " " + password)
         // POST request for check password is correct ? 
         const res = await axios.post(urlSignin, {
             email: email,

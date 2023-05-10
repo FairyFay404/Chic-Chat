@@ -7,8 +7,10 @@ import conversationRoute from './routes/conversation.js';
 import registerRoute from './routes/register.js';
 import loginRoute from './routes/login.js';
 import messagesRoute from './routes/message.js';
+import userRoute from './routes/user.js'
 import rsaKeyRoute from './routes/rsaKey.js';
 import cors from 'cors';
+import CryptoJS from "crypto-js";
 
 
 
@@ -24,6 +26,7 @@ app.use('/api/conversation', conversationRoute);
 app.use('/api/register', registerRoute);
 app.use('/api/login', loginRoute);
 app.use('/api/messages', messagesRoute);
+app.use('/api/user', userRoute)
 app.use('/api/rsaKey', rsaKeyRoute);
 
 // declare port for server running
