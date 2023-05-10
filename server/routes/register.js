@@ -82,61 +82,51 @@ router.post('/', async (req, res) => {
     // query email in database if it exist 
 
     const queryData = query(collection(database, "users"), where("email", "==", req.body.email));
-
     const querySnapShot = await getDocs(queryData);
+
+    const queryUsername = query(collection(database, "users"), where("username", "==", req.body.username));
+    const querySnapShotUsername = await getDocs(queryUsername);
 
     // check user are exits in database ? 
 
     /* if users not exist in database  */
     /* hash password and then add it in database */
     if (querySnapShot.empty) {
-        const message_username = checkUsernameValidation(req.body.username)
-        if (message_username != "username valid") {
-            return res.status(200).json({ status: "fail", message: message_username, type: "username" })
-        }
-        const message_password = checkPasswordValidation(req.body.password)
-        if (message_password != "password valid") {
-            return res.status(200).json({ status: "fail", message: message_password, type: "password" })
-        }
+        if (querySnapShotUsername.empty) {
+            const message_username = checkUsernameValidation(req.body.username)
+            if (message_username != "username valid") {
+                return res.status(200).json({ status: "fail", message: message_username, type: "username" })
+            }
+            const message_password = checkPasswordValidation(req.body.password)
+            if (message_password != "password valid") {
+                return res.status(200).json({ status: "fail", message: message_password, type: "password" })
+            }
 
-        try{
-            const ciphertext = CryptoJS.AES.encrypt(req.body.password,secretAES).toString();
-            const newUser = await addDoc(collection(database, "users"), {
-                email: req.body.email,
-                password: ciphertext,
-                username: req.body.username,
-                createAt: new Date(),
-                updateAt: new Date()
-            });
-            console.log("Documents ID of users " + newUser.id)
-            res.status(200).json({ status: "success", message: "successful register" })
-            return;
-        } catch(err){
-            console.log(err);
-            res.status(500).json({ status: "fail", message: err.message });
-            return;
+            try {
+                const ciphertext = CryptoJS.AES.encrypt(req.body.password, secretAES).toString();
+                const newUser = await addDoc(collection(database, "users"), {
+                    email: req.body.email,
+                    password: ciphertext,
+                    username: req.body.username,
+                    publicKey: "",
+                    aesKeyEncrypted: "",
+                    createAt: new Date(),
+                    updateAt: new Date(),
+                    proprofilePicture: "",
+                    onRequest: [],
+                    friends: []
+                });
+                console.log("Documents ID of users " + newUser.id)
+                res.status(200).json({ status: "success", message: "successful register" })
+                return;
+            } catch (err) {
+                console.log(err);
+                res.status(500).json({ status: "fail", message: err.message });
+                return;
+            }
+        } else {
+            res.status(200).json({ status: "fail", message: "user are exits in database", type: "username" })    
         }
-
-
-        // bcrypt.hash(req.body.password, saltRounds, async function (err, hash) {
-        //     try {
-        //         const newUser = await addDoc(collection(database, "users"), {
-        //             email: req.body.email,
-        //             password: hash,
-        //             username: req.body.username,
-        //             createAt: new Date(),
-        //             updateAt: new Date()
-        //         });
-        //         console.log("Documents ID of users " + newUser.id)
-        //         res.status(200).json({ status: "success", message: "successful register" })
-        //         return;
-        //     }
-        //     catch (err) {
-        //         console.log(err);
-        //         res.status(500).json({ status: "fail", message: err.message });
-        //         return;
-        //     }
-        // });
     }
     else {
         res.status(200).json({ status: "fail", message: "email are exits in database", type: "email" })

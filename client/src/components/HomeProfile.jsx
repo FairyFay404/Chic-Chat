@@ -17,25 +17,43 @@ export default function HomeProfile() {
     const [statusError, setStatusError] = useState(false);
     const [textError, setTextError] = useState("");
     const [noti_number, setNotiNumber] = useState("5");
-    const [buttonPopup, setButtonPopup] = useState(false);
+    const [buttonPopup, setButtonPopup] = useState(0);
 
     const [defaultUser, setDefaultUser] = useState({})
+    const [allconversation, setAllconversation] = useState([]) // (similarly friend)
 
     const urlgetInfo = baseURL + "/api/user/getInfo"
     const urlupdateInfo = baseURL + "/api/user/updateInfo"
     useEffect(() => {
-        axios.post(urlgetInfo, {}, {
-            headers: {
-                'Authorization': `Basic ${localStorage.getItem("token-access")}`
-            }
-        }).then((res) => {
-            setDefaultUser(res.data.user)
+        const fecthData = async () => {
+            const res = await axios.post(urlgetInfo, {}, {
+                headers: {
+                    'Authorization': `Basic ${localStorage.getItem("token-access")}`
+                }
+            })
+            setDefaultUser(res.data.user) // personal information (id, username, password, )
             setUsername(res.data.user.username)
             setPassword(res.data.user.password)
             setEmail(res.data.user.email)
-            console.log(res.data.user.username)
-        })
+
+            // All conversation of **USER** (similarly friend)
+            const urlgetConversation = baseURL + "/api/conversation/" + res.data.user.id
+            const res2 = await axios.get(urlgetConversation)
+
+            // map for put username of friend from documentID in each object(conversation) 
+            res2.data.conversation.map(async (data) => {
+                const urlgetUsername = baseURL + "/api/user/getUsername/" + data.partnerId
+                const res_username = await axios.get(urlgetUsername);
+                setAllconversation([...allconversation, { ...data, partnerUsername: res_username.data.username }])
+            })
+        }
+        fecthData();
+
     }, [])
+
+    useEffect(()=>{
+        
+    },[defaultUser])
 
     const handleEdit = (e) => {
         e.preventDefault();
@@ -80,6 +98,7 @@ export default function HomeProfile() {
     const handleSearch = () => {
         setStatusSearch(!statusSearch)
     }
+
     return (
         <>
             <div className="bg-gradient-to-b from-[#1565D8] to-[#9EE8FF] h-screen font-Rubik">
@@ -107,7 +126,6 @@ export default function HomeProfile() {
                                         </div>
                                     </div>
                                     <div className="flex flex-row gap-[18px] items-center">
-
                                         <button className={` ${statusAddfriend ? "hidden" : ""} w-[235px] h-[59px] rounded-[20px] bg-white flex items-center text-[20px] text-[#072653] font-normal`} onClick={changeStatus}>
                                             <img src="/addfriend icon.png" className='pe-[14px] ms-[32px]' /> Add friend
                                         </button>
@@ -133,15 +151,25 @@ export default function HomeProfile() {
 
                                 <div className="w-[1063px] h-[386px] rounded-[20px] bg-white mt-[22px] bg-opacity-70 overflow-y-scroll">
                                     <div className={` ${statusSearch ? "hidden" : ""}`}>
-                                        <Friendbox name={"Meaw"} count_message={5} />
+                                        {
+                                            allconversation?.map((friend, i) => {
+                                                return <Friendbox name={friend.partnerUsername} count_message={3} key={i} />
+                                            })
+                                        }
+                                        {/* <Friendbox name={"Meaw"} count_message={5} />
                                         <Friendbox name={"Aom"} count_message={3} />
-                                        <Friendbox name={"Party"} count_message={1} />
+                                        <Friendbox name={"Party"} count_message={1} /> */}
                                     </div>
 
                                     <div className={` ${statusSearch ? "" : "hidden"}`}>
-                                        <AddFriend name={"Meaw"} isFriend={false} />
+                                        {
+                                            allconversation?.map((friend, i) => {
+                                                return <Friendbox name={friend.partnerUsername} count_message={3} key={i} />
+                                            })
+                                        }
+                                        {/* <AddFriend name={"Meaw"} isFriend={false} />
                                         <AddFriend name={"Aom"} isFriend={true} />
-                                        <AddFriend name={"Party"} isFriend={true} />
+                                        <AddFriend name={"Party"} isFriend={true} /> */}
                                     </div>
 
                                 </div>
@@ -202,16 +230,17 @@ export default function HomeProfile() {
                                 <div className="mt-[53px] text-[20px] text-white font-semibold font-Montserrat">
                                     <button className='bg-gradient-to-b from-[#072653] via-[#1565D8] to-[#2FBCE8] w-[170px] h-[59px] rounded-[50px] mx-[15px]' onClick={handleSave}>Save</button>
                                     <button className='bg-gradient-to-b from-[#DB3D3D] via-[#FC6262] to-[#FF9595] w-[170px] h-[59px] rounded-[50px]' onClick={handleEdit}>Cancel</button>
-                                </div>:
+                                </div> :
                                 <button onClick={handleEdit} className='w-[260px] h-[59px] rounded-[50px] mt-[53px]
-                            bg-gradient-to-b from-[#072653] via-[#1565D8] to-[#2FBCE8]
-                            text-[20px] text-white font-semibold font-Montserrat
-                            hover:border-[2px] hover:border-[#178AAE] transition duration-300 ease-in-out hover:scale-110
-                            '>Edit your profile</button>}
+                                bg-gradient-to-b from-[#072653] via-[#1565D8] to-[#2FBCE8]
+                                text-[20px] text-white font-semibold font-Montserrat
+                                hover:border-[2px] hover:border-[#178AAE] transition duration-300 ease-in-out hover:scale-110
+                                '>Edit your profile</button>
+                            }
                         </div>
 
                     </div>
-                    <FriendPopup trigger={buttonPopup} setTrigger={setButtonPopup}></FriendPopup>
+                    <FriendPopup trigger={buttonPopup} setTrigger={setButtonPopup} defaultUser = {defaultUser}></FriendPopup>
                 </div>
 
             </div>

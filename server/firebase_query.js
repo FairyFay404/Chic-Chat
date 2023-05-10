@@ -4,7 +4,7 @@ import { collection, doc, getDocs, updateDoc, where, query, getDoc} from 'fireba
 
 
 
-/* find doc id of user collection rom email */
+/* find doc id of user collection From email */
 export const findUserDocByEmail = async (email)=>{
     const userRef = collection(database, "users");
     const queryDocId = query(userRef, where("email", "==", email));
