@@ -43,7 +43,8 @@ router.post('/', async (req, res)=> {
                 
                 // generated token
                 const token = jwt.sign({email: req.body.email}, privateKey, { expiresIn: '1h' });
-                const hashPassword = doc.data().password; 
+                const hashPassword = doc.data().password;
+                const email = doc.data().email; 
                 // compare password on request and hashpassword (bcrypt)
                 // if match => res.status(200).json({status: "success", message: "Login Successfully", token: ""})
 
