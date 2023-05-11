@@ -7,6 +7,7 @@ import axios from 'axios';
 
 
 export default function Chat() {
+    const [friendListId, setFriendListId] = useState([]);
     const [chatInfo, setChatInfo] = useState([]);
     const [error, setError] = useState(false)
     const [search, setSearch] = useState("")
@@ -32,7 +33,9 @@ export default function Chat() {
             const getConversation = async (userDocId)=>{
                 try {
                     const res = await axios.get("http://localhost:3000/api/conversation/"+ userDocId);
+                    console.log(res.data.conversation);
                     setChatInfo(res.data.conversation);
+                    //setFriendListId()
 
                 } catch (error) {
                     console.log(error);
@@ -45,6 +48,23 @@ export default function Chat() {
 
     }, []);
 
+    /* fetching friend data to show in inbox */
+    useEffect(()=>{
+
+        /* get length of friend for fetching data */
+        const friendCount = chatInfo.length;
+        const userDocId = sessionStorage.getItem("user-docId");
+        
+        /* have friend */
+        if(friendCount != 0) {
+            const friendIdList = chatInfo.map((element) => {
+                return element.member.find((user)=> user != userDocId)
+            });
+            
+            const getFriendInfo = axios.get()
+        }
+        
+    }, [chatInfo])
 
     useEffect(()=>{
 
