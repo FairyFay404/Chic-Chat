@@ -3,9 +3,11 @@ import Navbar from './Navbar'
 import Inbox from './subcomponents/Inbox'
 import Chatting from './subcomponents/Chatting'
 import {io} from "socket.io-client";
+import axios from 'axios';
 
 
 export default function Chat() {
+    const [chatInfo, setChatInfo] = useState([]);
     const [error, setError] = useState(false)
     const [search, setSearch] = useState("")
     const [focusinbox, setFocusinbox] = useState(-1)
@@ -13,16 +15,36 @@ export default function Chat() {
     const socket = useRef();
     const [userId, setUserId] = useState(null);
 
+
+
     /* first time when this page is rendering */
     useEffect(()=>{
 
         socket.current = io("http://localhost:8900");
-        /* check first is user-email exist ? */
-        if(sessionStorage.getItem("user-email") != null){
-            setUserId(sessionStorage.getItem("user-email"));
+
+        /* check first is user-docId exist ? */
+        if(sessionStorage.getItem("user-docId") != null){
+
+            const userDocId = sessionStorage.getItem("user-docId");
+            setUserId(userDocId);
+
+                /* get conversation */
+            const getConversation = async (userDocId)=>{
+                try {
+                    const res = await axios.get("http://localhost:3000/api/conversation/"+ userDocId);
+                    setChatInfo(res.data.conversation);
+
+                } catch (error) {
+                    console.log(error);
+                }
+        
+            }
+            /* get conversation of user */
+            getConversation(userDocId);
         }
 
     }, []);
+
 
     useEffect(()=>{
 
@@ -66,12 +88,9 @@ export default function Chat() {
                                     </div>
 
                                     <div className="w-[700px] h-[718px] overflow-y-scroll">
-                                        <Inbox person={"Party"} lastmessage={"Hello broo"} lastsender={"a"} count_message={20} time={"just now"} focusinbox={focusinbox} setFocusinbox={setFocusinbox} index={"1"} setChatIdNow={setChatIdNow} chatId = {101} />
-                                        <Inbox person={"Meaw"} lastmessage={"Hello broo"} lastsender={"me"} count_message={20} time={"just now"} focusinbox={focusinbox} setFocusinbox={setFocusinbox} index={"2"} setChatIdNow={setChatIdNow} chatId = {102} />
-                                        <Inbox person={"Aom"} lastmessage={"Hello broo"} lastsender={"a"} count_message={20} time={"just now"} focusinbox={focusinbox} setFocusinbox={setFocusinbox} index={"3"} setChatIdNow={setChatIdNow} chatId = {103} />
-                                        <Inbox person={"Party"} lastmessage={"Hello broo"} lastsender={"a"} count_message={20} time={"just now"} focusinbox={focusinbox} setFocusinbox={setFocusinbox} index={"4"} setChatIdNow={setChatIdNow} chatId = {104} />
-                                        <Inbox person={"Party"} lastmessage={"Hello broo"} lastsender={"a"} count_message={20} time={"just now"} focusinbox={focusinbox} setFocusinbox={setFocusinbox} index={"5"} setChatIdNow={setChatIdNow} chatId = {105} />
-                                        <Inbox person={"Party"} lastmessage={"Hello broo"} lastsender={"a"} count_message={20} time={"just now"} focusinbox={focusinbox} setFocusinbox={setFocusinbox} index={"6"} setChatIdNow={setChatIdNow} chatId = {106} />
+                                        {chatInfo.map((element) => (
+                                            <Inbox person={element.id} lastmessage={"Hello broo"} lastsender={"a"} count_message={20} time={"just now"} focusinbox={focusinbox} setFocusinbox={setFocusinbox} index={"1"} setChatIdNow={setChatIdNow} chatId = {101} />
+                                        ))}
                                     </div>
                                 </div>
                             </div>
@@ -80,9 +99,9 @@ export default function Chat() {
                             <div className="w-[1120px] h-[877px] rounded-r-[50px] 
                                 bg-white/50 border-l-2  border-l-[#1565D880] 
                                 flex flex-col justify-center items-center ">
-                                <Chatting name={"Party"} chatIdNow={chatIdNow} chatId = {101} index={1} />         
-                                <Chatting name={"Meaw"} chatIdNow={chatIdNow} chatId = {102} index={2}/>         
-                                <Chatting name={"Aom"} chatIdNow={chatIdNow} chatId = {103} index={3}/>         
+                                <Chatting name={"Party"} chatIdNow={chatIdNow} chatId = {101} index={1} socket={socket} userId={userId}/>         
+                                <Chatting name={"Meaw"} chatIdNow={chatIdNow} chatId = {102} index={2} socket={socket} userId={userId}/>         
+                                <Chatting name={"Aom"} chatIdNow={chatIdNow} chatId = {103} index={3} socket={socket} userId={userId}/>         
                                 
                             </div>
                         </div>
