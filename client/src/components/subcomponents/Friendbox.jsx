@@ -1,13 +1,16 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom';
 
-export default function Friendbox({name,count_message}) {
+
+export default function Friendbox({ name, count_message }) {
+    const navigate = useNavigate()
     return (
         <>
             <div className="w-[1053px] h-[77px] flex justify-between items-center border-b-2 border-b-[#2FBCE8]">
                 <div className="flex flex-row justify-center items-center">
                     <img src="/Profile.png" className='ms-[38px] me-[25px] ' />
                     <h1 className='text-[20px] font-medium'>{name}</h1>
-                    
+
                     <div className={` ${count_message ? "w-[35px] h-[35px] bg-[#FF3F3F] rounded-[50%] ms-[15px] text-white flex justify-center items-center" : "hidden"}`}>
                         <h1>{count_message}</h1>
                     </div>

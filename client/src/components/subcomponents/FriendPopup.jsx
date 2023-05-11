@@ -3,9 +3,8 @@ import FriendRequire from './FriendRequire';
 import axios from 'axios';
 import { baseURL } from '../../baseURL'
 
-export default function FriendPopup({ trigger, setTrigger, defaultUser }) {
+export default function FriendPopup({ trigger, setTrigger, defaultUser, dataRequested, setDataRequested }) {
     const [friendRequest, setFriendRequest] = useState([])
-    const [idRequested, setIdRequested] = useState("")
 
     useEffect(() => {
         if (defaultUser.id != undefined) {
@@ -20,21 +19,21 @@ export default function FriendPopup({ trigger, setTrigger, defaultUser }) {
             }
             getFriendRequestId()
         }
-        return setFriendRequest([])
     }, [defaultUser])
 
     useEffect(() => {
-        if (idRequested != undefined) {
-            const getFriendRequestId = async () => {
-                setFriendRequest(friendRequest.filter((dataFriend) => {return dataFriend.FriendId != idRequested}))
+        if (dataRequested != undefined) {
+            
+            const changeRequestAndConver = async () => {
+                setFriendRequest(friendRequest.filter((dataFriend) => {return dataFriend.FriendId != dataRequested}))
             }
-            getFriendRequestId()
-        }
-    }, [idRequested])
 
-    useEffect(() => {
-        console.log(friendRequest)
-    }, [friendRequest])
+            if(dataRequested.status == "success accept"){
+                
+            }
+            changeRequestAndConver()
+        }
+    }, [dataRequested])
 
     return (trigger) ? (
         <>
@@ -48,7 +47,7 @@ export default function FriendPopup({ trigger, setTrigger, defaultUser }) {
                         <div className="h-[254px] ">
                             {
                                 friendRequest?.map((friend, i) => {
-                                    return <FriendRequire name={friend.username} FriendId={friend.FriendId} defaultUser={defaultUser} key={i} setIdRequested={setIdRequested} />
+                                    return <FriendRequire name={friend.username} FriendId={friend.FriendId} defaultUser={defaultUser} key={i} setDataRequested={setDataRequested} />
                                 })
 
                             }

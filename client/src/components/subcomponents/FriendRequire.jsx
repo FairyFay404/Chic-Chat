@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import { baseURL } from '../../baseURL';
 
-export default function FriendRequire({ name, FriendId, defaultUser , setIdRequested}) {
+export default function FriendRequire({ name, FriendId, defaultUser , setDataRequested}) {
     useEffect(() => {
 
     }, [])
@@ -16,9 +16,9 @@ export default function FriendRequire({ name, FriendId, defaultUser , setIdReque
                 friendId: FriendId
             })
             console.log(res.data.status)
+            setDataRequested(FriendId)
         }
         fetchchangeStatusRequest()
-        setIdRequested(FriendId)
     }
 
     const handleReject = () => {
@@ -32,7 +32,7 @@ export default function FriendRequire({ name, FriendId, defaultUser , setIdReque
             console.log(res.data.status)
         }
         fetchchangeStatusRequest()
-        setIdRequested(FriendId)
+        setDataRequested(FriendId)
     }
 
     return (
