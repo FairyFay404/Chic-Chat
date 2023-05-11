@@ -2,13 +2,51 @@ import React, { useEffect, useState } from 'react'
 import MessageReceive from './MessageReceive'
 import MessageSend from './MessageSend'
 
-export default function Chatting({ name, chatIdNow, chatId, index }) {
-    const [message, setMesaage] = useState("")
+
+/* conversation is object */
+/* conversation = {
+    id: string,
+    members: [
+        member1DocId,
+        member2DocId,
+    ]
+} */
+
+export default function Chatting({ name, chatIdNow, chatId, index, conversation, socket, userId }) {
+    const [message, setMessage] = useState([]);
+    const [newmessage, setNewMessage] = useState("");
+    const [arrivalMessage, setArrivalMessage] = useState(null);
+
+
+    // useEffect(()=>{
+    //     socket.current.on("getMessage", (data)=>{
+    //         setArrivalMessage({
+    //             conversationId : conversation.id,
+    //             senderId: data.senderId,
+    //             text: data.text,
+    //             createAt: new Date(),
+    //             updateAt: new Date()
+    //         })
+    //     })
+    // },[])
 
     useEffect(() => {
         document.getElementById(index).focus();
         console.log(chatIdNow);
     },[chatIdNow])
+
+
+    const handleSubmit = ()=>{
+
+        const receiverId = conversation.members.find((user)=> user !== userId);
+
+        socket.current.emit("sendMessage", {
+            senderId: userId, 
+            receiverId, 
+            newmessage
+        })
+
+    }
 
 
     return (
@@ -39,8 +77,8 @@ export default function Chatting({ name, chatIdNow, chatId, index }) {
                             <button><img src="/add icon.png" className=' w-[61px] h-[61px]' /></button>
                             <input type="text" id={index} className="w-[880px] h-[59px] ms-[20px] pl-[50px] rounded-[20px]
                                 text-[#072653] font-Rubik font-normal border-[0px] focus:border-[3px] focus:border-[#178AAE] focus:outline-0
-                                " placeholder="Aa" onChange={e => setMesaage(e.target.value)}/>
-                            <button><img src="/send icon.png" className='w-[53px] h-[53px] ms-[20px]' /></button>
+                                " placeholder="Aa" onChange={e => setNewMessage(e.target.value)}/>
+                            <button onClick={ handleSubmit }><img src="/send icon.png" className='w-[53px] h-[53px] ms-[20px]' /></button>
                         </label>
                     </dev>
                 </div>

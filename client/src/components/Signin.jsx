@@ -80,7 +80,8 @@ export default function Signin() {
             // set any token sessionStorage
             console.log("token: " + res.data.token);
             sessionStorage.setItem("token-access", res.data.token);
-            sessionStorage.setItem("user-email", res.data.email);
+            sessionStorage.setItem("user-email", res.data.userInfo.email);
+            sessionStorage.setItem("user-docId", res.data.userInfo.userDocId);
             navigate("/home");
         }
     

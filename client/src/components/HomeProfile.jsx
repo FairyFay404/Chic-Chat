@@ -26,7 +26,7 @@ export default function HomeProfile() {
     useEffect(() => {
         axios.post(urlgetInfo, {}, {
             headers: {
-                'Authorization': `Basic ${localStorage.getItem("token-access")}`
+                'Authorization': `Basic ${sessionStorage.getItem("token-access")}`
             }
         }).then((res) => {
             setDefaultUser(res.data.user)
@@ -57,7 +57,7 @@ export default function HomeProfile() {
                 email: email
             }, {
                 headers: {
-                    'Authorization': `Basic ${localStorage.getItem("token-access")}`
+                    'Authorization': `Basic ${sessionStorage.getItem("token-access")}`
                 }
             }).then((res) => {
                 if (res.data.status == "fail") {
@@ -65,8 +65,8 @@ export default function HomeProfile() {
                     setTextError(res.data.message)
                 } else {
                     alert(res.data.message)
-                    localStorage.removeItem("token-access")
-                    localStorage.setItem("token-access", res.data.token);
+                    sessionStorage.removeItem("token-access")
+                    sessionStorage.setItem("token-access", res.data.token);
                     location.reload()
                 }
             })

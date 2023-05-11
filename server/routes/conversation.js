@@ -63,7 +63,7 @@ router.get('/:userId', async (req, res)=>{
             return;
         }
         else{
-            res.status(422).json({status: "success", message: "No conversation"});
+            res.status(200).json({status: "success", message: "No conversation"});
             return;
         }
     

@@ -44,14 +44,18 @@ router.post('/', async (req, res)=> {
                 // generated token
                 const token = jwt.sign({email: req.body.email}, privateKey, { expiresIn: '1h' });
                 const hashPassword = doc.data().password;
-                const email = doc.data().email; 
+
                 // compare password on request and hashpassword (bcrypt)
                 // if match => res.status(200).json({status: "success", message: "Login Successfully", token: ""})
 
                 const bytes = CryptoJS.AES.decrypt(hashPassword, secretAES);
                 const plainText = bytes.toString(CryptoJS.enc.Utf8);
+                const userInfo = {
+                    email: doc.data().email,
+                    userDocId: doc.id
+                }
                 if(req.body.password == plainText){
-                    res.status(200).json({status: "success", message: "Login Successfully", token: token});
+                    res.status(200).json({status: "success", message: "Login Successfully", token: token, userInfo});
                     return;
                 }
                 else{
