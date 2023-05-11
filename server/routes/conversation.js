@@ -68,8 +68,11 @@ router.get('/:userId', async (req, res) => {
                 id: doc.id, ...doc.data(), partnerId: findpartnerId(doc.data().member, req.params.userId)
             }));
 
+            const partnerId = listConversation.map((element) =>{
+                return element.member.find((user) => (user !== req.params.userId));
+            })
             // for call data can use method toDate() to convert it to date object 
-            res.status(200).json({ status: "success", conversation: listConversation });
+            res.status(200).json({ status: "success", conversation: listConversation, partnerId:partnerId });
             return;
         }
         else {

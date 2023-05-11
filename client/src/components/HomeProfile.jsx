@@ -21,6 +21,7 @@ export default function HomeProfile() {
 
     const [defaultUser, setDefaultUser] = useState({})
     const [allconversation, setAllconversation] = useState([]) // (similarly friend)
+    const [dataRequested, setDataRequested] = useState({})
 
     const urlgetInfo = baseURL + "/api/user/getInfo"
     const urlupdateInfo = baseURL + "/api/user/updateInfo"
@@ -28,7 +29,7 @@ export default function HomeProfile() {
         const fecthData = async () => {
             const res = await axios.post(urlgetInfo, {}, {
                 headers: {
-                    'Authorization': `Basic ${localStorage.getItem("token-access")}`
+                    'Authorization': `Basic ${sessionStorage.getItem("token-access")}`
                 }
             })
             setDefaultUser(res.data.user) // personal information (id, username, password, )
@@ -51,9 +52,19 @@ export default function HomeProfile() {
 
     }, [])
 
-    useEffect(()=>{
-        
-    },[defaultUser])
+    useEffect(() => {
+
+        if (dataRequested != undefined) {
+            const addConversation = async () => {
+                const urlgetUsername = baseURL + "/api/user/getUsername/" + data.friendId
+                const res_username = await axios.get(urlgetUsername);
+                if (dataRequested.status == "success accept") {
+                    setAllconversation([...allconversation, { id: dataRequested.friendId }])
+                }
+            }
+            addConversation()
+        }
+    }, [dataRequested])
 
     const handleEdit = (e) => {
         e.preventDefault();
@@ -98,6 +109,8 @@ export default function HomeProfile() {
     const handleSearch = () => {
         setStatusSearch(!statusSearch)
     }
+
+
 
     return (
         <>
@@ -164,7 +177,7 @@ export default function HomeProfile() {
                                     <div className={` ${statusSearch ? "" : "hidden"}`}>
                                         {
                                             allconversation?.map((friend, i) => {
-                                                return <Friendbox name={friend.partnerUsername} count_message={3} key={i} />
+                                                return <Friendbox name={friend.partnerUsername} chatId={friend} count_message={3} key={i} />
                                             })
                                         }
                                         {/* <AddFriend name={"Meaw"} isFriend={false} />
@@ -240,7 +253,7 @@ export default function HomeProfile() {
                         </div>
 
                     </div>
-                    <FriendPopup trigger={buttonPopup} setTrigger={setButtonPopup} defaultUser = {defaultUser}></FriendPopup>
+                    <FriendPopup trigger={buttonPopup} setTrigger={setButtonPopup} defaultUser={defaultUser} dataRequested={dataRequested} setDataRequested={setDataRequested}></FriendPopup>
                 </div>
 
             </div>
