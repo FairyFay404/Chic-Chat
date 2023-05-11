@@ -1,10 +1,10 @@
 import express from "express";
-import { collection, addDoc, query, where, getDocs, doc, setDoc } from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs, doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 import { database } from "../firebase-config.js";
 import jwt from "jsonwebtoken";
 import { checkUsernameValidation, checkPasswordValidation } from "./register.js";
 import CryptoJS from "crypto-js";
-
+import { findUserDocById } from "../firebase_query.js"
 
 
 const router = express.Router();
@@ -36,7 +36,7 @@ router.post('/updateInfo', async (req, res) => {
                 if (message_password != "password valid") {
                     return res.status(200).json({ status: "fail", message: message_password, type: "password" })
                 }
-                if (querySnapShot2.empty || (decoded.email == req.body.email) ) { // If new email is not used
+                if (querySnapShot2.empty || (decoded.email == req.body.email)) { // If new email is not used
                     try {
                         const ciphertext = CryptoJS.AES.encrypt(req.body.password, secretAES).toString();
                         await setDoc(doc(database, "users", user.id), {
@@ -57,8 +57,8 @@ router.post('/updateInfo', async (req, res) => {
                     return res.status(200).json({ status: "fail", message: "email is used", type: "email" })
                 }
             })
-        }else{
-            return res.status(200).json({ status: "fail", message: "email " + decoded.email +" not found", type: "email" })
+        } else {
+            return res.status(200).json({ status: "fail", message: "email " + decoded.email + " not found", type: "email" })
         }
 
     } catch (err) {
@@ -78,11 +78,75 @@ router.post('/getInfo', async (req, res) => {
         querySnapShot.forEach((user) => {
             const bytes = CryptoJS.AES.decrypt(user.data().password, secretAES);
             const plainText = bytes.toString(CryptoJS.enc.Utf8);
-            return res.status(200).json({ stataus: "success", user: { email : user.data().email, username: user.data().username, password: plainText} })
+            return res.status(200).json({ stataus: "success", user: { id: user.id, email: user.data().email, username: user.data().username, password: plainText } })
         })
     } catch (err) {
         return res.status(200).json({ status: "fail", message: err.message })
     }
+})
+
+// get Username by userId 
+router.get('/getUsername/:userId', async (req, res) => {
+    try {
+        const docRef = doc(database, "users", req.params.userId);
+        const docSnap = await getDoc(docRef);
+        return res.status(200).json({ status: "success", username: docSnap.data().username })
+    } catch (err) {
+        return res.status(200).json({ status: "fail", message: err.message })
+    }
+})
+
+// get Id in onRequest by userId
+router.get('/getFriendRequestId/:userId', async (req, res) => {
+    try {
+        // access information of current user
+        const docRef = doc(database, "users", req.params.userId);
+        const docSnap = await getDoc(docRef);
+        return res.status(200).json({ status: "success", friendRequest: docSnap.data().onRequest })
+    } catch (err) {
+        return res.status(200).json({ status: "fail", message: err.message })
+    }
+})
+
+router.post('/changeStatusRequest', async (req, res) => {
+    try {
+        const user = await findUserDocById(req.body.id)
+        const docRef = doc(database, "users", user.id);
+        if (req.body.isaccept == true) {
+            // Add FriendId to Array friend and Delete FriendId from Array onRequest
+
+            // Add FriendId to Array friend 
+            user.friends.push(req.body.friendId)
+
+            // Delete FriendId from Array onRequest
+            user.onRequest.filter((id,i)=>{
+                if(id == req.body.friendId){
+                    user.onRequest.splice(i, 1);
+                }
+            })
+            await updateDoc(docRef, {
+                friends : user.friends,
+                onRequest : user.onRequest
+            });
+            return res.json({ status: "success accept", onRequest: user.onRequest, friends: user.friends })
+        } else { // if reject requestion 
+            // Delete FriendId from Array onRequest
+            user.onRequest.filter((id,i)=>{
+                if(id == req.body.friendId){
+                    user.onRequest.splice(i, 1);
+                }
+            })
+            await updateDoc(docRef, {
+                onRequest : user.onRequest
+            });
+            return res.json({ status: "success reject", onRequest: user.onRequest, friends: user.friends })
+        }
+
+
+    } catch (err) {
+        return res.json({ status: "fail", message : err.message })
+    }
+
 })
 
 export default router
