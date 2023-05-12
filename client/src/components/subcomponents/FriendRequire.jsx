@@ -2,9 +2,8 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import { baseURL } from '../../baseURL';
 
-export default function FriendRequire({ name, FriendId, defaultUser , setDataRequested}) {
+export default function FriendRequire({ name, idRequest, defaultUser, setDataRequested, }) {
     useEffect(() => {
-
     }, [])
 
     const handleAccept = () => {
@@ -13,10 +12,9 @@ export default function FriendRequire({ name, FriendId, defaultUser , setDataReq
             const res = await axios.post(urlchangeStatusRequest, {
                 id: defaultUser.id,
                 isaccept: true,
-                friendId: FriendId
+                friendId: idRequest
             })
-            console.log(res.data.status)
-            setDataRequested(FriendId)
+            setDataRequested(res.data)
         }
         fetchchangeStatusRequest()
     }
@@ -27,12 +25,11 @@ export default function FriendRequire({ name, FriendId, defaultUser , setDataReq
             const res = await axios.post(urlchangeStatusRequest, {
                 id: defaultUser.id,
                 isaccept: false,
-                friendId: FriendId
+                friendId: idRequest
             })
-            console.log(res.data.status)
+            setDataRequested(res.data)
         }
         fetchchangeStatusRequest()
-        setDataRequested(FriendId)
     }
 
     return (

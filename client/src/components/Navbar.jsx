@@ -30,7 +30,6 @@ export default function Navbar() {
         )
     },[])
 
-
     
     const handleLogout = () => {
         alert("logout")

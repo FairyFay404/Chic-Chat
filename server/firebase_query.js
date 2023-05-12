@@ -49,3 +49,18 @@ export const findUserDocById = async (id) => {
     }
 
 }
+
+export const findConversationById = async (id) =>{
+
+    const userRef = doc(database, "conversation",id);
+    const queryDocIdSnapshot = await getDoc(userRef);
+
+    if(!queryDocIdSnapshot.empty){
+        const conversationDoc = { id : queryDocIdSnapshot.id, ...queryDocIdSnapshot.data() } 
+        
+        return conversationDoc
+    }else{
+        return {}
+    }
+    
+}

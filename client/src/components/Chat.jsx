@@ -1,10 +1,10 @@
-import React, { useEffect, useState,useRef } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import Navbar from './Navbar'
 import Inbox from './subcomponents/Inbox'
 import Chatting from './subcomponents/Chatting'
-import {io} from "socket.io-client";
+import { io } from "socket.io-client";
 import axios from 'axios';
-
+import { useLocation } from "react-router-dom";
 
 export default function Chat() {
     const [friendListId, setFriendListId] = useState([]);
@@ -16,23 +16,23 @@ export default function Chat() {
     const socket = useRef();
     const [userId, setUserId] = useState(null);
 
-
+    const location = useLocation();
 
     /* first time when this page is rendering */
-    useEffect(()=>{
+    useEffect(() => {
 
         socket.current = io("http://localhost:8900");
 
         /* check first is user-docId exist ? */
-        if(sessionStorage.getItem("user-docId") != null){
+        if (sessionStorage.getItem("user-docId") != null) {
 
             const userDocId = sessionStorage.getItem("user-docId");
             setUserId(userDocId);
 
-                /* get conversation */
-            const getConversation = async (userDocId)=>{
+            /* get conversation */
+            const getConversation = async (userDocId) => {
                 try {
-                    const res = await axios.get("http://localhost:3000/api/conversation/"+ userDocId);
+                    const res = await axios.get("http://localhost:3000/api/conversation/" + userDocId);
                     console.log(res.data.conversation);
                     setChatInfo(res.data.conversation);
                     //setFriendListId()
@@ -40,45 +40,48 @@ export default function Chat() {
                 } catch (error) {
                     console.log(error);
                 }
-        
+
             }
             /* get conversation of user */
             getConversation(userDocId);
+            console.log(location)
+            if (location.state != null)
+                setChatIdNow(location.state.conversationId)
         }
 
     }, []);
 
     /* fetching friend data to show in inbox */
-    useEffect(()=>{
+    useEffect(() => {
 
         /* get length of friend for fetching data */
         const friendCount = chatInfo.length;
         const userDocId = sessionStorage.getItem("user-docId");
-        
+
         /* have friend */
-        if(friendCount != 0) {
+        if (friendCount != 0) {
             const friendIdList = chatInfo.map((element) => {
-                return element.member.find((user)=> user != userDocId)
+                return element.member.find((user) => user != userDocId)
             });
-            
+
             const getFriendInfo = axios.get()
         }
-        
+
     }, [chatInfo])
 
-    useEffect(()=>{
+    useEffect(() => {
 
-        if(userId != null){
+        if (userId != null) {
             socket.current.emit("addUser", userId);
         }
 
-        socket.current.on("getUser", users=>{
+        socket.current.on("getUser", users => {
             console.log(users);
         });
 
-    },[userId]);
+    }, [userId]);
 
-    
+
     const handleEdit = (e) => {
         e.preventDefault();
         setError(true);
@@ -109,7 +112,7 @@ export default function Chat() {
 
                                     <div className="w-[700px] h-[718px] overflow-y-scroll">
                                         {chatInfo.map((element) => (
-                                            <Inbox person={element.id} lastmessage={"Hello broo"} lastsender={"a"} count_message={20} time={"just now"} focusinbox={focusinbox} setFocusinbox={setFocusinbox} index={"1"} setChatIdNow={setChatIdNow} chatId = {101} />
+                                            <Inbox person={element.id} lastmessage={"Hello broo"} lastsender={"a"} count_message={20} time={"just now"} focusinbox={focusinbox} setFocusinbox={setFocusinbox} index={"1"} setChatIdNow={setChatIdNow} chatId={101} />
                                         ))}
                                     </div>
                                 </div>
@@ -119,10 +122,10 @@ export default function Chat() {
                             <div className="w-[1120px] h-[877px] rounded-r-[50px] 
                                 bg-white/50 border-l-2  border-l-[#1565D880] 
                                 flex flex-col justify-center items-center ">
-                                <Chatting name={"Party"} chatIdNow={chatIdNow} chatId = {101} index={1} socket={socket} userId={userId}/>         
-                                <Chatting name={"Meaw"} chatIdNow={chatIdNow} chatId = {102} index={2} socket={socket} userId={userId}/>         
-                                <Chatting name={"Aom"} chatIdNow={chatIdNow} chatId = {103} index={3} socket={socket} userId={userId}/>         
-                                
+                                <Chatting name={"Party"} chatIdNow={chatIdNow} chatId={101} index={1} socket={socket} userId={userId} />
+                                <Chatting name={"Meaw"} chatIdNow={chatIdNow} chatId={102} index={2} socket={socket} userId={userId} />
+                                <Chatting name={"Aom"} chatIdNow={chatIdNow} chatId={103} index={3} socket={socket} userId={userId} />
+
                             </div>
                         </div>
                     </div>
