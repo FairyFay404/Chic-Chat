@@ -1,6 +1,9 @@
-import React, { useEffect, useState } from 'react'
-import MessageReceive from './MessageReceive'
-import MessageSend from './MessageSend'
+import React, { useEffect, useState,useRef } from 'react';
+import MessageReceive from './MessageReceive';
+import MessageSend from './MessageSend';
+import axios from 'axios';
+import { baseURL } from '../../baseURL';
+
 
 
 /* conversation is object */
@@ -12,39 +15,113 @@ import MessageSend from './MessageSend'
     ]
 } */
 
-export default function Chatting({ name, chatIdNow, chatId, index, conversation, socket, userId }) {
-    const [message, setMessage] = useState([]);
+export default function Chatting({ name, chatIdNow, chatId, index, socket, conversation}) {
+    const [messages, setMessages] = useState([]);
     const [newmessage, setNewMessage] = useState("");
     const [arrivalMessage, setArrivalMessage] = useState(null);
+    const [userId, setUserId] = useState("");
+    const scrollRef = useRef();
+    const addMessageURL = "/api/messages/add";
 
 
-    // useEffect(()=>{
-    //     socket.current.on("getMessage", (data)=>{
-    //         setArrivalMessage({
-    //             conversationId : conversation.id,
-    //             senderId: data.senderId,
-    //             text: data.text,
-    //             createAt: new Date(),
-    //             updateAt: new Date()
-    //         })
-    //     })
-    // },[])
+    
+
+    useEffect(() =>{
+        /* set userId */
+        const userId = sessionStorage.getItem("user-docId");
+        setUserId(userId);
+        socket.current.on("getMessage", (data)=>{
+            setArrivalMessage({
+                conversationId : conversation.id,
+                senderId: data.senderId,
+                text: data.text,
+                createAt: Date.now(),
+                updateAt: Date.now()
+            })
+        })
+        
+    },[])
+
+
+    /* for update message in array */
+    useEffect(()=> {
+        arrivalMessage && conversation?.member.includes(arrivalMessage.senderId) &&
+        setMessages([...messages, arrivalMessage])
+
+    },[arrivalMessage, chatIdNow])
+ 
 
     useEffect(() => {
         document.getElementById(index).focus();
         console.log(chatIdNow);
+
+        const getMessage = async (chatIdNow) => {
+
+            try {
+                /* fetching message for showing in another conversation by conversationId(chatId) */
+                const res = await axios.get("http://localhost:3000/api/messages/"+ chatIdNow);
+
+                if(res.data.status == "success"){
+                    setMessages(res.data.listMessages);
+                    console.log(res.data.listMessages[0].createAt);
+                }
+
+            } catch (err) {
+                console.log(err);
+            }
+
+        }
+
+        getMessage(chatIdNow);
+
     },[chatIdNow])
 
+    useEffect(()=>{
+        scrollRef.current?.scrollIntoView({behavior: "smooth"});
+    },[messages])
 
-    const handleSubmit = ()=>{
 
-        const receiverId = conversation.members.find((user)=> user !== userId);
+
+    const handleSubmit = (e)=>{
+
+        e.preventDefault();
+        
+        const receiverId = conversation.member.find((user)=> user !== userId);
 
         socket.current.emit("sendMessage", {
             senderId: userId, 
             receiverId, 
-            newmessage
+            text: newmessage
         })
+
+        const saveMessage = async () => {
+            try {
+
+                const message = {
+                    conversationId: conversation.id,
+                    text: newmessage, 
+                    senderId: userId,
+                }
+
+                const res = await axios.post(baseURL + addMessageURL, message);
+
+
+                if(res.data.status == "success"){
+                    console.log("save message successfully");
+                    setMessages([ ...messages, res.data.messageDoc]);
+                    // clear input
+                    setNewMessage("");
+                    const newMessageInput = document.getElementById(index);
+                    newMessageInput.value = "";
+                }
+                else {
+                    console.log("can't save message ");
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        saveMessage();
 
     }
 
@@ -61,12 +138,24 @@ export default function Chatting({ name, chatIdNow, chatId, index, conversation,
 
             {/*Message*/}
             <div className=" w-[1118px] h-[650px] overflow-y-scroll pt-[25px]">
-                <MessageReceive message={"ว่าไงเมี้ยว กฟกฟกหสฟากสาส่หฟดา่ฟหสวก่ดหสฟาก่ดาสห่กดส่ฟหกดาส่ฟหสก่ดฟหส่กดสหา่กดส่หกฟดสา่ฟหกสด่หฟกสด่หฟกสด่หฟสาก่ดสฟหกดสหก่ดหส่ดหฟสาก่ดหาสฟ่"} time={"Apr 8, 2023, 8.08 AM"} />
-                <MessageSend message={"วันนี้สัน ฟกฟกฟกฟกฟกฟหกฟกฟหกฟก "} time={"Apr 8, 2023, 8.10 AM"} />
-                <MessageSend message={"มีเรื่องอยากถามสักเรื่อง "} time={"Apr 8, 2023, 8.10 AM"} />
-                <MessageSend message={"มีเรื่องอยากถามสักเรื่อง "} time={"Apr 8, 2023, 8.10 AM"} />
-                <MessageReceive message={"ว่าไงเมี้ยว กฟกฟกหสฟากสาส่หฟดา่ฟหสวก่ดหสฟาก่ดาสห่กดส่ฟหกดาส่ฟหสก่ดฟหส่กดสหา่กดส่หกฟดสา่ฟหกสด่หฟกสด่หฟกสด่หฟสาก่ดสฟหกดสหก่ดหส่ดหฟสาก่ดหาสฟ่"} time={"Apr 8, 2023, 8.08 AM"} />
-                <MessageReceive message={"ไง"} time={"Apr 8, 2023, 8.08 AM"} />
+                {messages.map((message)=> {
+                    /*  check is date ?  */
+                    let time; 
+                    if(message.createAt instanceof Date) {
+                        time = message.createAt;
+                    }
+                    else {
+                        const timestampValue = message.createAt.seconds * 1000 + message.createAt.nanoseconds / 1000000;
+                        time = new Date(timestampValue);
+                    }
+
+                    if(message.senderId == userId){
+                        return <div ref={scrollRef}> <MessageSend message={message.text} time={time}/> </div>
+                    }
+                    else{
+                        return <div ref={scrollRef}> <MessageReceive message={message.text} time={time}/> </div>
+                    }
+                })}
             </div>
 
             {/*Text input*/}

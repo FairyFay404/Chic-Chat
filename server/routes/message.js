@@ -1,7 +1,8 @@
 import express from "express";
 import { ref, set, get } from "firebase/database";
-import { collection, addDoc, Timestamp, query, where, getDocs} from "firebase/firestore";
+import { collection, addDoc, Timestamp, query, where, getDocs, orderBy} from "firebase/firestore";
 import { database } from "../firebase-config.js";
+import { getMessageById } from "../firebase_query.js";
 
 const router = express.Router();
 
@@ -27,16 +28,24 @@ router.post('/add', async (req,res) => {
 
   try{
     const messageRef = collection(database, "messages");
-    const addMessage = await addDoc(messageRef, {
+    const messageData = {
       conversationId: req.body.conversationId,
       text: req.body.text, 
       senderId: req.body.senderId,
       createAt: new Date(),
-      updateAt: new Date()    
-  })
+      updateAt: new Date()   
+    }
+
+    const addMessage = await addDoc(messageRef, messageData);
+
+    /* return doc in firebase becuase we want createAt and updateAt in timeStamp */
+    let messageDoc = {};
+    messageDoc = await getMessageById(addMessage.id);
+
+
   
-  res.status(200).json({status: "success", message: "Successfully add message"});
-  return;
+    res.status(200).json({status: "success", message: "Successfully add message", messageDoc : messageDoc});
+    return;
     
   }catch(err){
     res.status(500).json({status: "fail", message: err});
@@ -52,7 +61,7 @@ router.get('/:conversationId', async (req, res)=> {
 
   try {
     const messageRef = collection(database, "messages");
-    const queryData = query(messageRef, where("conversationId", "==", req.params.conversationId));
+    const queryData = query(messageRef, where("conversationId", "==", req.params.conversationId), orderBy("createAt", "asc"));
     
     const querySnapShot = await getDocs(queryData);
 
@@ -75,7 +84,7 @@ router.get('/:conversationId', async (req, res)=> {
     }
     
   } catch (err) {
-    res.status(500).json({status: "fail", message: "Something went wrong!"});
+    res.status(500).json({status: "fail", message: err});
     return;
   }
 

@@ -33,9 +33,7 @@ export default function Chat() {
             const getConversation = async (userDocId)=>{
                 try {
                     const res = await axios.get("http://localhost:3000/api/conversation/"+ userDocId);
-                    console.log(res.data.conversation);
                     setChatInfo(res.data.conversation);
-                    //setFriendListId()
 
                 } catch (error) {
                     console.log(error);
@@ -108,8 +106,8 @@ export default function Chat() {
                                     </div>
 
                                     <div className="w-[700px] h-[718px] overflow-y-scroll">
-                                        {chatInfo.map((element) => (
-                                            <Inbox person={element.id} lastmessage={"Hello broo"} lastsender={"a"} count_message={20} time={"just now"} focusinbox={focusinbox} setFocusinbox={setFocusinbox} index={"1"} setChatIdNow={setChatIdNow} chatId = {101} />
+                                        {chatInfo.map((element,index) => (
+                                            <Inbox person={element.partnerInfo.username} lastmessage={"Hello broo"} lastsender={"a"} count_message={20} time={"just now"} focusinbox={focusinbox} setFocusinbox={setFocusinbox} index={index} setChatIdNow={setChatIdNow} chatId = {element.id} />
                                         ))}
                                     </div>
                                 </div>
@@ -119,9 +117,9 @@ export default function Chat() {
                             <div className="w-[1120px] h-[877px] rounded-r-[50px] 
                                 bg-white/50 border-l-2  border-l-[#1565D880] 
                                 flex flex-col justify-center items-center ">
-                                <Chatting name={"Party"} chatIdNow={chatIdNow} chatId = {101} index={1} socket={socket} userId={userId}/>         
-                                <Chatting name={"Meaw"} chatIdNow={chatIdNow} chatId = {102} index={2} socket={socket} userId={userId}/>         
-                                <Chatting name={"Aom"} chatIdNow={chatIdNow} chatId = {103} index={3} socket={socket} userId={userId}/>         
+                                    {chatInfo.map((e,index)=> (
+                                        <Chatting name={e.partnerInfo.username} chatIdNow={chatIdNow} chatId = {e.id} index={index} socket={socket} conversation={e}/>
+                                    ))}        
                                 
                             </div>
                         </div>

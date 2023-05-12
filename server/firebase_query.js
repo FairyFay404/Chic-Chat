@@ -49,3 +49,24 @@ export const findUserDocById = async (id) => {
     }
 
 }
+
+export const getMessageById = async (id)=>{
+    const messageRef = doc(database, "messages",id);
+    const getMessage = await getDoc(messageRef);
+
+    /* check is message exist ? */
+    if(getMessage.exists()){
+        
+        // mapping value
+        const messageDoc = {
+            id: getMessage.id,
+            ...getMessage.data()
+        }
+
+        // return value
+        return messageDoc;
+    }
+    else{
+        return null;
+    }
+}
