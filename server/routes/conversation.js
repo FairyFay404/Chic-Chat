@@ -2,6 +2,7 @@ import express from "express";
 import { ref, set, get } from "firebase/database";
 import { collection, addDoc, Timestamp, query, where, getDocs, doc, getDoc } from "firebase/firestore";
 import { database } from "../firebase-config.js";
+import { findUserDocById } from "../firebase_query.js";
 
 const router = express.Router();
 
@@ -65,14 +66,35 @@ router.get('/:userId', async (req, res) => {
             
             // it reurn doc of conversation id that user are member
             const listConversation = querySnapShot.docs.map((doc) => ({
-                id: doc.id, ...doc.data(), partnerId: findpartnerId(doc.data().member, req.params.userId)
+                id: doc.id, ...doc.data()
             }));
 
+            /* find id of partner in conversation */
             const partnerId = listConversation.map((element) =>{
                 return element.member.find((user) => (user !== req.params.userId));
             })
+            
+            /* looping for get partner data  */
+            const partnerList = [];
+            await Promise.all(partnerId.map(async (user) => {
+                const partnerInfo = await findUserDocById(user);
+                partnerList.push(partnerInfo);
+            }))
+
+            /* final data for listConversation */
+            const newListConversation = [];
+            listConversation.map((user, index) => {
+                /* merge 2 json data */
+                const mergeData = {
+                    ...user,
+                    partnerInfo : partnerList[index]
+                }
+                newListConversation.push(mergeData);
+            });
+
+            
             // for call data can use method toDate() to convert it to date object 
-            res.status(200).json({ status: "success", conversation: listConversation, partnerId:partnerId });
+            res.status(200).json({ status: "success", conversation: newListConversation, partnerId:partnerId });
             return;
         }
         else {

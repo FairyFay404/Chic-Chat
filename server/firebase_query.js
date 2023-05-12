@@ -41,7 +41,7 @@ export const findUserDocById = async (id) => {
             id: queryDocIdSnapshot.id, ...queryDocIdSnapshot.data()
         }
 
-        // it return array like this [{id: ..., email: ...}, {id:..., email: ...},]
+        // it return array like this {id: ..., email: ...}
         return userDoc;
     }
     else{
