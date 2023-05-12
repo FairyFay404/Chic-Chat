@@ -21,7 +21,7 @@ export default function HomeProfile() {
 
     const [defaultUser, setDefaultUser] = useState({})
     const [allconversation, setAllconversation] = useState([]) // (similarly friend)
-    const [dataRequested, setDataRequested] = useState({})
+    const [dataRequested, setDataRequested] = useState()
 
     const urlgetInfo = baseURL + "/api/user/getInfo"
     const urlupdateInfo = baseURL + "/api/user/updateInfo"
@@ -39,32 +39,30 @@ export default function HomeProfile() {
 
             // All conversation of **USER** (similarly friend)
             const urlgetConversation = baseURL + "/api/conversation/" + res.data.user.id
-            const res2 = await axios.get(urlgetConversation)
-
-            // map for put username of friend from documentID in each object(conversation) 
-            res2.data.conversation.map(async (data) => {
-                const urlgetUsername = baseURL + "/api/user/getUsername/" + data.partnerId
-                const res_username = await axios.get(urlgetUsername);
-                setAllconversation([...allconversation, { ...data, partnerUsername: res_username.data.username }])
-            })
+            const resConversation = await axios.get(urlgetConversation)
+            setAllconversation(resConversation.data.conversation)
         }
         fecthData();
 
     }, [])
 
     useEffect(() => {
-
         if (dataRequested != undefined) {
-            const addConversation = async () => {
-                const urlgetUsername = baseURL + "/api/user/getUsername/" + data.friendId
-                const res_username = await axios.get(urlgetUsername);
-                if (dataRequested.status == "success accept") {
-                    setAllconversation([...allconversation, { id: dataRequested.friendId }])
+            if (dataRequested.status == "success accept") { // add conversation when accpet only
+                const changeConversationPopup = () => {
+                    setAllconversation([...allconversation, { ...dataRequested.dataConversation }])
+                    // console.log([...allconversation, {...dataRequested.dataConversation}])
                 }
+                changeConversationPopup()
             }
-            addConversation()
         }
     }, [dataRequested])
+
+    useEffect(() => {
+        console.log(allconversation)
+    }, [allconversation])
+
+
 
     const handleEdit = (e) => {
         e.preventDefault();
@@ -165,8 +163,8 @@ export default function HomeProfile() {
                                 <div className="w-[1063px] h-[386px] rounded-[20px] bg-white mt-[22px] bg-opacity-70 overflow-y-scroll">
                                     <div className={` ${statusSearch ? "hidden" : ""}`}>
                                         {
-                                            allconversation?.map((friend, i) => {
-                                                return <Friendbox name={friend.partnerUsername} count_message={3} key={i} />
+                                            allconversation?.map((conversation, i) => {
+                                                return <Friendbox name={conversation.partnerInfo.username} conversationId={conversation.id} count_message={3} key={i} />
                                             })
                                         }
                                         {/* <Friendbox name={"Meaw"} count_message={5} />
@@ -175,12 +173,8 @@ export default function HomeProfile() {
                                     </div>
 
                                     <div className={` ${statusSearch ? "" : "hidden"}`}>
-                                        {
-                                            allconversation?.map((friend, i) => {
-                                                return <Friendbox name={friend.partnerUsername} chatId={friend} count_message={3} key={i} />
-                                            })
-                                        }
-                                        {/* <AddFriend name={"Meaw"} isFriend={false} />
+                                        {/* 
+                                        <AddFriend name={"Meaw"} isFriend={false} /> 
                                         <AddFriend name={"Aom"} isFriend={true} />
                                         <AddFriend name={"Party"} isFriend={true} /> */}
                                     </div>

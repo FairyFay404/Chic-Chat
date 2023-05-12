@@ -6,32 +6,33 @@ import { baseURL } from '../../baseURL'
 export default function FriendPopup({ trigger, setTrigger, defaultUser, dataRequested, setDataRequested }) {
     const [friendRequest, setFriendRequest] = useState([])
 
+    // get all onRequest for show in popup requstion be friend
     useEffect(() => {
-        if (defaultUser.id != undefined) {
+        if (defaultUser.id != undefined) { // For prevent first setDefaultUser
             const getFriendRequestId = async () => {
-                const urlGetFriendRequestId = baseURL + "/api/user/getFriendRequestId/" + defaultUser.id
-                const res = await axios.get(urlGetFriendRequestId);
-                res.data.friendRequest.map(async (FriendId, i) => {
-                    const urlgetUsername = baseURL + "/api/user/getUsername/" + FriendId
+                const temp = []
+                await Promise.all(defaultUser.onRequest.map(async (idRequest, i) => {
+                    const urlgetUsername = baseURL + "/api/user/getUsername/" + idRequest
                     const res = await axios.get(urlgetUsername);
-                    setFriendRequest([...friendRequest, { FriendId: FriendId, username: res.data.username }]);
-                })
+                    console.log(res.data.username)
+                    temp.push({username : res.data.username, idRequest: idRequest})
+                }))
+                setFriendRequest(temp);
             }
             getFriendRequestId()
         }
     }, [defaultUser])
 
+    // Do when user change status of requstion be friend
     useEffect(() => {
-        if (dataRequested != undefined) {
+        if (dataRequested != undefined) { // For prevent first setDataRequested
             
-            const changeRequestAndConver = async () => {
-                setFriendRequest(friendRequest.filter((dataFriend) => {return dataFriend.FriendId != dataRequested}))
+            const changeRequestPopup = async () => {
+                //dataFriend.idRequest -> Doc id friend from Popup
+                //dataRequested.friendId -> Doc id friend from action requestion 
+                setFriendRequest(friendRequest.filter((dataFriend) => {return dataFriend.idRequest != dataRequested.friendId}))
             }
-
-            if(dataRequested.status == "success accept"){
-                
-            }
-            changeRequestAndConver()
+            changeRequestPopup()
         }
     }, [dataRequested])
 
@@ -47,15 +48,11 @@ export default function FriendPopup({ trigger, setTrigger, defaultUser, dataRequ
                         <div className="h-[254px] ">
                             {
                                 friendRequest?.map((friend, i) => {
-                                    return <FriendRequire name={friend.username} FriendId={friend.FriendId} defaultUser={defaultUser} key={i} setDataRequested={setDataRequested} />
+                                    return <FriendRequire name={friend.username} idRequest={friend.idRequest} defaultUser={defaultUser} key={i} setDataRequested={setDataRequested} />
                                 })
 
                             }
-                            {/* <FriendRequire name={"Earn"}></FriendRequire>
-                            <FriendRequire name={"Aom"}></FriendRequire>
-                            <FriendRequire name={"Meaw"}></FriendRequire> */}
                         </div>
-
                     </div>
                 </div>
             </div>

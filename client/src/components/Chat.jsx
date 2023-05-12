@@ -1,10 +1,10 @@
-import React, { useEffect, useState,useRef } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import Navbar from './Navbar'
 import Inbox from './subcomponents/Inbox'
 import Chatting from './subcomponents/Chatting'
-import {io} from "socket.io-client";
+import { io } from "socket.io-client";
 import axios from 'axios';
-
+import { useLocation } from "react-router-dom";
 
 export default function Chat() {
     const [friendListId, setFriendListId] = useState([]);
@@ -16,21 +16,21 @@ export default function Chat() {
     const socket = useRef();
     const [userId, setUserId] = useState(null);
 
-
+    const location = useLocation();
 
     /* first time when this page is rendering */
-    useEffect(()=>{
+    useEffect(() => {
 
         socket.current = io("http://localhost:8900");
 
         /* check first is user-docId exist ? */
-        if(sessionStorage.getItem("user-docId") != null){
+        if (sessionStorage.getItem("user-docId") != null) {
 
             const userDocId = sessionStorage.getItem("user-docId");
             setUserId(userDocId);
 
-                /* get conversation */
-            const getConversation = async (userDocId)=>{
+            /* get conversation */
+            const getConversation = async (userDocId) => {
                 try {
                     const res = await axios.get("http://localhost:3000/api/conversation/"+ userDocId);
                     setChatInfo(res.data.conversation);
@@ -38,45 +38,48 @@ export default function Chat() {
                 } catch (error) {
                     console.log(error);
                 }
-        
+
             }
             /* get conversation of user */
             getConversation(userDocId);
+            console.log(location)
+            if (location.state != null)
+                setChatIdNow(location.state.conversationId)
         }
 
     }, []);
 
     /* fetching friend data to show in inbox */
-    useEffect(()=>{
+    useEffect(() => {
 
         /* get length of friend for fetching data */
         const friendCount = chatInfo.length;
         const userDocId = sessionStorage.getItem("user-docId");
-        
+
         /* have friend */
-        if(friendCount != 0) {
+        if (friendCount != 0) {
             const friendIdList = chatInfo.map((element) => {
-                return element.member.find((user)=> user != userDocId)
+                return element.member.find((user) => user != userDocId)
             });
-            
+
             const getFriendInfo = axios.get()
         }
-        
+
     }, [chatInfo])
 
-    useEffect(()=>{
+    useEffect(() => {
 
-        if(userId != null){
+        if (userId != null) {
             socket.current.emit("addUser", userId);
         }
 
-        socket.current.on("getUser", users=>{
+        socket.current.on("getUser", users => {
             console.log(users);
         });
 
-    },[userId]);
+    }, [userId]);
 
-    
+
     const handleEdit = (e) => {
         e.preventDefault();
         setError(true);

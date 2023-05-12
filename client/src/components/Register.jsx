@@ -41,6 +41,7 @@ export default function Register() {
 
     const handleSubmit = async (e) => {
         const urlRegister = baseURL + "/api/register"
+        setErrorDefault();
         e.preventDefault();
         if (username.trim().length == 0 || password.trim().length == 0 || confirmPassword.trim().length == 0 || email.trim().length == 0) {
             setError(true);
@@ -60,7 +61,6 @@ export default function Register() {
 
             if (res.data.status == "fail") {
                 // set Default Error of each input for reset Error
-                setErrorDefault();
 
                 setError(true);
                 if (res.data.type == "username") {

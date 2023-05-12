@@ -24,17 +24,6 @@ const router = express.Router();
 /* for create a new conversation */
 /* path for create conversation (chat lobby) */
 
-const findpartnerId = (arrayId, myId) => {
-    var partnerId = ""
-    arrayId.forEach(async (Id, i) => {
-        if (Id != myId) {
-            partnerId = Id
-        }
-    })
-    return partnerId;
-}
-
-
 router.post('/', async (req, res) => {
     try {
         const newConversation = await addDoc(collection(database, "conversation"), {
