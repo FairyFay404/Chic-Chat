@@ -42,10 +42,12 @@ io.on("connection", (socket)=>{
       
       /* server send message to user 2 */
       const user = findSocketId(receiverId);
-      io.to(user.socketId).emit("getMessage", {
-        senderId,
-        text,
-      });
+      if(user !== undefined){
+        io.to(user.socketId).emit("getMessage", {
+          senderId,
+          text,
+        });
+      }
 
     })
 

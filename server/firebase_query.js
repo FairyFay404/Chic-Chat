@@ -50,7 +50,7 @@ export const findUserDocById = async (id) => {
 
 }
 
-export const getMessageById = async (id)=>{
+export const getMessageById = async (id)=> {
     const messageRef = doc(database, "messages",id);
     const getMessage = await getDoc(messageRef);
 
@@ -69,6 +69,8 @@ export const getMessageById = async (id)=>{
     else{
         return null;
     }
+}
+
 export const findConversationById = async (id) =>{
 
     const userRef = doc(database, "conversation",id);
