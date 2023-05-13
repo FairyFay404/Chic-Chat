@@ -42,7 +42,6 @@ export default function Chat() {
             }
             /* get conversation of user */
             getConversation(userDocId);
-            console.log(location)
             if (location.state != null)
                 setChatIdNow(location.state.conversationId)
         }
@@ -74,7 +73,7 @@ export default function Chat() {
         }
 
         socket.current.on("getUser", users => {
-            console.log(users);
+            // console.log(users);
         });
 
     }, [userId]);
@@ -110,7 +109,7 @@ export default function Chat() {
 
                                     <div className="w-[700px] h-[718px] overflow-y-scroll">
                                         {chatInfo.map((element,index) => (
-                                            <Inbox person={element.partnerInfo.username} lastmessage={"Hello broo"} lastsender={"a"} count_message={20} time={"just now"} focusinbox={focusinbox} setFocusinbox={setFocusinbox} index={index} setChatIdNow={setChatIdNow} chatId = {element.id} />
+                                            <Inbox person={element.partnerInfo.username} lastmessage={"Hello broo"} lastsender={"a"} count_message={20} time={"just now"} focusinbox={focusinbox} setFocusinbox={setFocusinbox} index={index} chatIdNow={chatIdNow} setChatIdNow={setChatIdNow} chatId = {element.id} />
                                         ))}
                                     </div>
                                 </div>
