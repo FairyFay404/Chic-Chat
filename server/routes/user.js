@@ -139,7 +139,7 @@ router.post('/changeStatusRequest', async (req, res) => {
         const user = await findUserDocById(req.body.id)
         const docRef = doc(database, "users", user.id);
 
-        const friendRef = doc(database, "users", friendId);
+        const friendRef = doc(database, "users", req.body.friendId);
         const friendSnap = await getDoc(docRef);
 
         if (req.body.isaccept == true) {
@@ -169,8 +169,9 @@ router.post('/changeStatusRequest', async (req, res) => {
             // add friend with my docId in friend's collection
             const arrayFriend = friendSnap.data().friends
             arrayFriend.push(user.id) 
+            console.log(arrayFriend)
             await updateDoc(friendRef, {
-                friends : friendSnap,
+                friends : arrayFriend,
             });
 
             // create conversion between I and Friend  
