@@ -3,7 +3,7 @@ import Navbar from './Navbar'
 import Friendbox from './subcomponents/Friendbox'
 import AddFriend from './subcomponents/AddFriend'
 import FriendPopup from './subcomponents/FriendPopup'
-
+import {EyeInvisibleOutlined, EyeOutlined} from "@ant-design/icons"
 export default function HomeProfile() {
     const [username, setUsername] = useState("Eiei")
     const [password, setPassword] = useState("123456")
@@ -16,6 +16,8 @@ export default function HomeProfile() {
     const [textError, setTextError] = useState("");
     const [noti_number, setNotiNumber] = useState("5");    
     const [buttonPopup, setButtonPopup] = useState(false);
+    const [passwordVisible, setPasswordVisible] = useState(false);
+    const [confirmpasswordVisible, setConfirmPasswordVisible] = useState(false);
 
     useEffect(()=>{
         
@@ -129,25 +131,35 @@ export default function HomeProfile() {
                                         <input type="text" className='bg-transparent ps-[10px] outline-0' value={username}  placeholder="Enter your new username" onChange={e => { setUsername(e.target.value) }} /> :
                                         <label className='ps-[10px] text-[20px] text-[#07265380] '>{username}</label>
                                     }
-
+                                    
                                 </div>
-                                <div className="w-[460px] h-[59px] bg-white bg-opacity-70 rounded-[20px]
+                                <div className="relative w-[460px] h-[59px] bg-white bg-opacity-70 rounded-[20px]
                                 ps-[28px] font-medium text-[20px] text-[#072653]
                                 flex items-center">
                                     <label className='pe-[13px] text-[24px] text-[#000000] '>Password :</label>
                                     {statusEdit ?
-                                        <input type="password" className='bg-transparent ps-[10px] outline-0' value={password}  placeholder="Enter your new password" onChange={e => { setPassword(e.target.value) }} /> :
-                                        <label className='ps-[10px] text-[20px] text-[#07265380] '>*********</label>
+                                        <input type={passwordVisible ? "text" : "password"} className='bg-transparent ps-[10px] outline-0 placeholder:text-[16px]' value={password}  placeholder="Enter your new password" onChange={e => { setPassword(e.target.value) }} /> :
+                                        <label className=' w-[250px] ps-[10px] text-[20px] text-[#07265380] '>*********</label>
                                     }
+                                    <div className={` ${statusEdit ? "flex absolute  right-[46px]"  : "hidden"}  `}  onClick={() => setPasswordVisible(!passwordVisible)}>
+                                        {
+                                            passwordVisible ? <EyeOutlined className='  bg-white bg-opacity-80 text-[28px]'/> : <EyeInvisibleOutlined className='  bg-white bg-opacity-80 text-[28px]'/>
+                                        }
+                                    </div>
                                 </div>
-                                <div className={` ${statusEdit ? "w-[460px] h-[75px] bg-white bg-opacity-70 rounded-[20px] ps-[28px] font-medium text-[20px] text-[#072653] flex items-center"
+                                <div className={` ${statusEdit ? " relative w-[460px] h-[75px] bg-white bg-opacity-70 rounded-[20px] ps-[28px] font-medium text-[20px] text-[#072653] flex items-center"
                                 : "hidden"}  `}
                                 >
                                     <div className="flex flex-row items-center">
                                         <label className='text-[24px] text-[#000000] w-[123px] '>Confirm Password</label>
                                         <label className='pe-[13px] text-[24px] text-[#000000] w-[10px] '>:</label>
                                     </div>
-                                    <input type="password" className='bg-transparent ps-[10px] outline-0' placeholder="Enter your new password" onChange={e => { setConfirmpassword(e.target.value) }} />
+                                    <input type={confirmpasswordVisible ? "text" : "password"} className=' outline-none bg-transparent ps-[10px] outline-0 placeholder:text-[16px]' placeholder="Enter your new password" onChange={e => { setConfirmpassword(e.target.value) }} />
+                                    <div className={` ${statusEdit ? "flex absolute  right-[46px]"  : "hidden"}  `}  onClick={() => setConfirmPasswordVisible(!confirmpasswordVisible)}>
+                                        {
+                                            confirmpasswordVisible ? <EyeOutlined className='  bg-white bg-opacity-80 text-[28px]'/> : <EyeInvisibleOutlined className='  bg-white bg-opacity-80 text-[28px]'/>
+                                        }
+                                    </div>
                                 </div>
                                 <div className="w-[460px] h-[59px] bg-white bg-opacity-70 rounded-[20px]
                                 ps-[28px] font-medium text-[20px] text-[#072653]
