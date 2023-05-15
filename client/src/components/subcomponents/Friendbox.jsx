@@ -2,7 +2,7 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom';
 
 
-export default function Friendbox({ name, conversationId, count_message, key }) {
+export default function Friendbox({ name, conversationId, count_message }) {
     const navigate = useNavigate()
 
     const handleStartChat = () => {

@@ -20,7 +20,7 @@ router.post('/updateInfo', async (req, res) => {
         // For check current user by email(decode(token) = email) 
         const queryData = query(collection(database, "users"), where("email", "==", decoded.email)); // 
         const querySnapShot = await getDocs(queryData);
-        
+
         // For check new email is used ?
         const queryData2 = query(collection(database, "users"), where("email", "==", req.body.email));
         const querySnapShot2 = await getDocs(queryData2);
@@ -40,7 +40,7 @@ router.post('/updateInfo', async (req, res) => {
                     return res.status(200).json({ status: "fail", message: message_password, type: "password" })
                 }
                 // if not empty & new username != old username -> "username is used"
-                if(!querySnapShot3.empty && req.body.username != user.data().username){
+                if (!querySnapShot3.empty && req.body.username != user.data().username) {
                     return res.status(200).json({ status: "fail", message: "username is used", type: "username" })
                 }
 
@@ -86,7 +86,7 @@ router.post('/getInfo', async (req, res) => {
         querySnapShot.forEach((user) => {
             const bytes = CryptoJS.AES.decrypt(user.data().password, secretAES);
             const plainText = bytes.toString(CryptoJS.enc.Utf8);
-            return res.status(200).json({ stataus: "success", user: { id: user.id, email: user.data().email, username: user.data().username, onRequest: user.data().onRequest, password: plainText } })
+            return res.status(200).json({ stataus: "success", user: { id: user.id, email: user.data().email, username: user.data().username, friends: user.data().friends, onRequest: user.data().onRequest, password: plainText } })
         })
     } catch (err) {
         return res.status(200).json({ status: "fail", message: err.message })
@@ -117,8 +117,8 @@ router.get('/getFriendRequestId/:userId', async (req, res) => {
     }
 })
 
-router.post('/addFriend', async (req, res) =>{
-    try{
+router.post('/addFriend', async (req, res) => {
+    try {
         const docRef = doc(database, "users", req.body.friendId);
         const docSnap = await getDoc(docRef);
 
@@ -126,11 +126,11 @@ router.post('/addFriend', async (req, res) =>{
         arrayOnrequest.push(req.body.myId)
 
         await updateDoc(docRef, {
-            onRequest : arrayOnrequest
+            onRequest: arrayOnrequest
         });
-        return res.json({ status: "success", message : "Success add friend", arrayOnrequest: arrayOnrequest })
-    }catch(err){
-        return res.json({ status: "fail", message : err.message })
+        return res.json({ status: "success", message: "Success add friend", arrayOnrequest: arrayOnrequest })
+    } catch (err) {
+        return res.json({ status: "fail", message: err.message })
     }
 })
 
@@ -151,16 +151,16 @@ router.post('/changeStatusRequest', async (req, res) => {
             user.friends.push(req.body.friendId)
 
             // Delete FriendId from Array onRequest
-            user.onRequest.filter((id,i)=>{
-                if(id == req.body.friendId){
+            user.onRequest.filter((id, i) => {
+                if (id == req.body.friendId) {
                     user.onRequest.splice(i, 1);
                 }
             })
 
             // update now my collection
             await updateDoc(docRef, {
-                friends : user.friends,
-                onRequest : user.onRequest
+                friends: user.friends,
+                onRequest: user.onRequest
             });
 
             // ---------------------- Part Friend ----------------------------
@@ -168,10 +168,10 @@ router.post('/changeStatusRequest', async (req, res) => {
 
             // add friend with my docId in friend's collection
             const arrayFriend = friendSnap.data().friends
-            arrayFriend.push(user.id) 
+            arrayFriend.push(user.id)
             console.log(arrayFriend)
             await updateDoc(friendRef, {
-                friends : arrayFriend,
+                friends: arrayFriend,
             });
 
             // create conversion between I and Friend  
@@ -186,45 +186,82 @@ router.post('/changeStatusRequest', async (req, res) => {
 
             const dataFriend = await findUserDocById(req.body.friendId)
             const infoConversation = await findConversationById(newConversation.id)
-            const dataConversation = {...infoConversation, partnerInfo : dataFriend}
+            const dataConversation = { ...infoConversation, partnerInfo: dataFriend }
 
-            return res.json({ status: "success accept", onRequest: user.onRequest, friends: user.friends, friendId: req.body.friendId, dataConversation: dataConversation})
+            return res.json({ status: "success accept", onRequest: user.onRequest, friends: user.friends, friendId: req.body.friendId, dataConversation: dataConversation })
 
         } else { // if reject requestion 
             // Delete FriendId from Array onRequest
-            user.onRequest.filter((id,i)=>{
-                if(id == req.body.friendId){
+            user.onRequest.filter((id, i) => {
+                if (id == req.body.friendId) {
                     user.onRequest.splice(i, 1);
                 }
             })
             await updateDoc(docRef, {
-                onRequest : user.onRequest
+                onRequest: user.onRequest
             });
-            return res.json({ status: "success reject", onRequest: user.onRequest, friends: user.friends, friendId: req.body.friendId})
+            return res.json({ status: "success reject", onRequest: user.onRequest, friends: user.friends, friendId: req.body.friendId })
         }
 
 
     } catch (err) {
-        return res.json({ status: "fail", message : err.message })
+        return res.json({ status: "fail", message: err.message })
     }
 
 })
 
 router.post('/searchfriend', async (req, res) => {
-    try{
+    try {
         const userRef = collection(database, "users");
         const userSnap = await getDocs(userRef)
-        const allUser = userSnap.docs.map((user)=>{
-            return {id: user.id, ...user.data()}
+        const allUser = userSnap.docs.map((user) => {
+            return { id: user.id, ...user.data() }
         })
 
-        const temp = allUser.map((user)=>{
-            return user.username == "meaw01" || user.username ==  "meaw02"
+        const onlyonRequest = userSnap.docs.map((user) => {
+            return { onRequest: user.data().onRequest }
         })
-        return res.json({ status: "success", message : allUser, temp : temp})
 
-    }catch(err){
-        return res.json({ status: "fail", message : err.message })
+        // delete my user and friend's user in Array 
+        const filterallUser = allUser.filter((user) => {
+            var correctCondotion = true;
+            //loop my array friends and check each id of alluser 
+            req.body.friends.forEach((friendId) => {
+                if (friendId == user.id)
+                    correctCondotion = false
+            })
+
+            //loop each onRequest of alluser for check that ever sent request?
+            console.log(user.onRequest)
+            user.onRequest.forEach((RequestId)=>{
+                if(RequestId == user.id){
+                    correctCondotion = false
+                }
+                console.log(RequestId)
+            })
+
+            if (user.id == req.body.myId)
+                correctCondotion = false
+            return correctCondotion == true
+        })
+
+        const search = filterallUser.filter((user, j) => {
+            var canFind = false
+            for (let i = 0; i < (user.username.length) - (req.body.word.length - 1); i++) {
+                const result = user.username.slice(i, i + req.body.word.length);
+                console.log(j + " : " + result + " : " + req.body.word + " : " + (result == req.body.word))
+                if (result == req.body.word) {
+                    canFind = true;
+                }
+            }
+            console.log(canFind)
+            return (canFind == true)
+        })
+
+        return res.json({ status: "success", search: search, onlyonRequest: onlyonRequest})
+
+    } catch (err) {
+        return res.json({ status: "fail", message: err.message })
     }
 })
 

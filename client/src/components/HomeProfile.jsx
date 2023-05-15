@@ -11,6 +11,7 @@ export default function HomeProfile() {
     const [password, setPassword] = useState("123456")
     const [confirmpassword, setConfirmpassword] = useState("")
     const [email, setEmail] = useState("bob@mail.com")
+    const [search, setSearch] = useState("")
     const [statusAddfriend, setStatusAddfriend] = useState(false)
     const [statusSearch, setStatusSearch] = useState(false);
     const [statusEdit, setStatusEdit] = useState(false);
@@ -22,6 +23,7 @@ export default function HomeProfile() {
     const [defaultUser, setDefaultUser] = useState({})
     const [allconversation, setAllconversation] = useState([]) // (similarly friend)
     const [dataRequested, setDataRequested] = useState()
+    const [dataSearch, setDataSearch] = useState([])
 
     const urlgetInfo = baseURL + "/api/user/getInfo"
     const urlupdateInfo = baseURL + "/api/user/updateInfo"
@@ -106,8 +108,19 @@ export default function HomeProfile() {
 
     const handleSearch = () => {
         setStatusSearch(!statusSearch)
+        const urlSearchfriend = baseURL + "/api/user/searchfriend"
+        axios.post(urlSearchfriend, {
+            word: search,
+            friends: defaultUser.friends,
+            myId: defaultUser.id
+        }).then((res)=>{
+            setDataSearch(res.data.search)
+        })
     }
 
+    useEffect(()=>{
+        console.log(dataSearch)
+    },[dataSearch])
 
 
     return (
@@ -164,7 +177,7 @@ export default function HomeProfile() {
                                     <div className={` ${statusSearch ? "hidden" : ""}`}>
                                         {
                                             allconversation?.map((conversation, i) => {
-                                                return <Friendbox name={conversation.partnerInfo.username} conversationId={conversation.id} count_message={3} key={i} />
+                                                return <Friendbox name={conversation.partnerInfo.username} conversationId={conversation.id} count_message={3} />
                                             })
                                         }
                                         {/* <Friendbox name={"Meaw"} count_message={5} />
@@ -173,10 +186,13 @@ export default function HomeProfile() {
                                     </div>
 
                                     <div className={` ${statusSearch ? "" : "hidden"}`}>
-                                        {/* 
-                                        <AddFriend name={"Meaw"} isFriend={false} /> 
-                                        <AddFriend name={"Aom"} isFriend={true} />
-                                        <AddFriend name={"Party"} isFriend={true} /> */}
+                                        {
+                                            dataSearch?.map((user,i)=>{
+                                                return <AddFriend name={user.username} isFriend={false} myId={defaultUser.id} friendsId={user.id} key={i} />
+                                                // return <AddFriend name={user.username} isFriend={true} />
+                                            })
+                                        }
+                                        {/* <AddFriend name={"meaw"} isFriend={true} myId={"1234"} friendsId={"5678"} /> */}
                                     </div>
 
                                 </div>
