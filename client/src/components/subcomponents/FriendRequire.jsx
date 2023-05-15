@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import { baseURL } from '../../baseURL';
 import forge from 'node-forge';
-import { encryptDataRSA, decryptDataRSA } from '../../usersKey';
+import { encryptDataRSA,decryptDataRSA } from '../../../usersKey';
 
 export default function FriendRequire({ name, idRequest, defaultUser, setDataRequested, }) {
 

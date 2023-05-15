@@ -18,6 +18,40 @@ export default function Chat() {
 
     const location = useLocation();
 
+    /* get conversation */
+    const getConversation = async (userDocId) => {
+        try {
+            const res = await axios.get("http://localhost:3000/api/conversation/"+ userDocId);
+            setChatInfo(res.data.conversation);
+
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
+    const updateFriendId = async () =>{
+        const oldChatInfoLength = chatInfo.length;
+        await getConversation(userId);
+        
+        /* check if length is not the same*/
+        if( oldChatInfoLength != chatInfo.length) {
+            /* get friendId for check you already have his/her aes key */
+            const friendNotHaveKey = chatInfo.map((element) => {
+                let friendAesKey = localStorage.getItem("aesKey-"+element.partnerInfo.id);
+                /* if we not have aeskey of that user but we are friend then keep friendId in array */
+                if(friendAesKey == null){
+                    return element.partnerInfo.id;
+                }
+            })
+            console.log(friendNotHaveKey);
+            /* now we get array of friend that don't have aeskey  */
+            /* if(friendAesKey) */
+            return friendNotHaveKey;
+            
+        }
+    }
+
     /* first time when this page is rendering */
     useEffect(() => {
 
@@ -29,22 +63,18 @@ export default function Chat() {
             const userDocId = sessionStorage.getItem("user-docId");
             setUserId(userDocId);
 
-            /* get conversation */
-            const getConversation = async (userDocId) => {
-                try {
-                    const res = await axios.get("http://localhost:3000/api/conversation/"+ userDocId);
-                    setChatInfo(res.data.conversation);
-
-                } catch (error) {
-                    console.log(error);
-                }
-
-            }
             /* get conversation of user */
             getConversation(userDocId);
             if (location.state != null)
                 setChatIdNow(location.state.conversationId)
+
+            const updateFriendIntervalId = setInterval(updateFriendId, 3000);
         }
+
+        return () => {
+            /* clear fetching friendId Lnterval  */
+            clearInterval(updateFriendIntervalId);
+        };
 
     }, []);
 
@@ -60,8 +90,9 @@ export default function Chat() {
             const friendIdList = chatInfo.map((element) => {
                 return element.member.find((user) => user != userDocId)
             });
+            console.log(friendIdList)
 
-            const getFriendInfo = axios.get()
+            // const getFriendInfo = axios.get()
         }
 
     }, [chatInfo])
