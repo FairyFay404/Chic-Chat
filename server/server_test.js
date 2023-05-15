@@ -9,6 +9,7 @@ import loginRoute from './routes/login.js';
 import messagesRoute from './routes/message.js';
 import userRoute from './routes/user.js'
 import rsaKeyRoute from './routes/rsaKey.js';
+import aesKeyRoute from './routes/aesKey.js';
 import cors from 'cors';
 import CryptoJS from "crypto-js";
 
@@ -26,8 +27,9 @@ app.use('/api/conversation', conversationRoute);
 app.use('/api/register', registerRoute);
 app.use('/api/login', loginRoute);
 app.use('/api/messages', messagesRoute);
-app.use('/api/user', userRoute)
+app.use('/api/user', userRoute);
 app.use('/api/rsaKey', rsaKeyRoute);
+app.use('/api/aesKey', aesKeyRoute);
 
 // declare port for server running
 app.listen(3000, () => {

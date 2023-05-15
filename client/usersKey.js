@@ -25,3 +25,15 @@ export const decryptDataAES = (cipherObj, aesKey, iv, ciphertext) => {
     const decryptedData = decipher.output.getBytes();
     return decryptedData;
 } 
+
+export const encryptDataRSA = (plaintext, publicKeyPem) => {
+    const publicKey = forge.pki.publicKeyFromPem(publicKeyPem);
+    const encryptData = publicKey.encrypt(plaintext);
+    return encryptData;
+}
+
+export const decryptDataRSA = (ciphertext, privateKeyPem) =>{
+    const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
+    const decryptData = privateKey.decrypt(ciphertext);
+    return decryptData;
+}

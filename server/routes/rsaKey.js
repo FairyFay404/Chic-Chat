@@ -1,5 +1,5 @@
 import express, { query } from 'express';
-import { collection, doc, getDocs, updateDoc, where} from "firebase/firestore";
+import { addDoc, arrayUnion, collection, doc, getDocs, updateDoc, where} from "firebase/firestore";
 import { database } from "../firebase-config.js";
 import { update } from 'firebase/database';
 import { findUserDocByEmail, findUserDocById } from "../firebase_query.js";
@@ -70,5 +70,6 @@ router.get('/:docId', async (req,res) => {
         return;
      }
 });
+
 
 export default router
