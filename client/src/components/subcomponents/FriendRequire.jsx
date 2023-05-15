@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import { baseURL } from '../../baseURL';
 import forge from 'node-forge';
-import { encryptDataRSA, decryptDataRSA } from '../../usersKey';
+import { encryptDataRSA, decryptDataRSA } from '../../../usersKey';
 
-export default function FriendRequire({ name, idRequest, defaultUser, setDataRequested, }) {
+export default function FriendRequire({ name, idRequest, defaultUser, setDataRequested, noti_number, setNotiNumber }) {
 
     const getPublicKeyURL = "/api/rsaKey/";
     const savePublicKey = "/api/aesKey/saveAesKey";
@@ -75,6 +75,7 @@ export default function FriendRequire({ name, idRequest, defaultUser, setDataReq
                 friendId: idRequest
             })
             setDataRequested(res.data)
+            setNotiNumber(noti_number-1)
         }
         await fetchchangeStatusRequest()
 
@@ -106,6 +107,7 @@ export default function FriendRequire({ name, idRequest, defaultUser, setDataReq
                 friendId: idRequest
             })
             setDataRequested(res.data)
+            setNotiNumber(noti_number-1)
         }
         fetchchangeStatusRequest()
     }

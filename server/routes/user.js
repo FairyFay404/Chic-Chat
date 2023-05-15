@@ -104,19 +104,6 @@ router.get('/getUsername/:userId', async (req, res) => {
     }
 })
 
-
-// get Id in onRequest by userId
-router.get('/getFriendRequestId/:userId', async (req, res) => {
-    try {
-        // access information of current user
-        const docRef = doc(database, "users", req.params.userId);
-        const docSnap = await getDoc(docRef);
-        return res.status(200).json({ status: "success", friendRequest: docSnap.data().onRequest })
-    } catch (err) {
-        return res.status(200).json({ status: "fail", message: err.message })
-    }
-})
-
 router.post('/addFriend', async (req, res) => {
     try {
         const docRef = doc(database, "users", req.body.friendId);
@@ -232,12 +219,11 @@ router.post('/searchfriend', async (req, res) => {
             })
 
             //loop each onRequest of alluser for check that ever sent request?
-            console.log(user.onRequest)
+            // console.log(user.onRequest)
             user.onRequest.forEach((RequestId)=>{
-                if(RequestId == user.id){
+                if(RequestId == req.body.myId){
                     correctCondotion = false
                 }
-                console.log(RequestId)
             })
 
             if (user.id == req.body.myId)
@@ -249,16 +235,16 @@ router.post('/searchfriend', async (req, res) => {
             var canFind = false
             for (let i = 0; i < (user.username.length) - (req.body.word.length - 1); i++) {
                 const result = user.username.slice(i, i + req.body.word.length);
-                console.log(j + " : " + result + " : " + req.body.word + " : " + (result == req.body.word))
+                // console.log(j + " : " + result + " : " + req.body.word + " : " + (result == req.body.word))
                 if (result == req.body.word) {
                     canFind = true;
                 }
             }
-            console.log(canFind)
+            // console.log(canFind)
             return (canFind == true)
         })
 
-        return res.json({ status: "success", search: search, onlyonRequest: onlyonRequest})
+        return res.json({ status: "success", search: search, onlyonRequest: onlyonRequest, allUser:allUser})
 
     } catch (err) {
         return res.json({ status: "fail", message: err.message })

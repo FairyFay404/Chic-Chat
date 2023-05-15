@@ -20,7 +20,7 @@ export default function HomeProfile() {
     const [textError, setTextError] = useState("");   
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [confirmpasswordVisible, setConfirmPasswordVisible] = useState(false);
-    const [noti_number, setNotiNumber] = useState("5");
+    const [noti_number, setNotiNumber] = useState(0);
     const [buttonPopup, setButtonPopup] = useState(0);
 
     const [defaultUser, setDefaultUser] = useState({})
@@ -147,7 +147,7 @@ export default function HomeProfile() {
                                         <h1 className='text-[40px] text-white font-semibold'>Friend</h1>
                                         <div className="relative">
                                             <button onClick={() => setButtonPopup(true)}><img src="/Notification.png" /></button>
-                                            <div className={` ${noti_number ? "" : "hidden"}w-[35px] h-[35px] bg-[#FF3F3F] rounded-[50%] ms-[15px] text-white flex justify-center items-center absolute top-2 left-7`}>
+                                            <div className={` ${noti_number != 0  ? "" : "hidden"} w-[35px] h-[35px] bg-[#FF3F3F] rounded-[50%] ms-[15px] text-white flex justify-center items-center absolute top-2 left-7`}>
                                                 <h1>{noti_number}</h1>
                                             </div>
                                         </div>
@@ -180,7 +180,7 @@ export default function HomeProfile() {
                                     <div className={` ${statusSearch ? "hidden" : ""}`}>
                                         {
                                             allconversation?.map((conversation, i) => {
-                                                return <Friendbox name={conversation.partnerInfo.username} conversationId={conversation.id} count_message={3} />
+                                                return <Friendbox name={conversation.partnerInfo.username} conversationId={conversation.id} count_message={3} key={i}/>
                                             })
                                         }
                                         {/* <Friendbox name={"Meaw"} count_message={5} />
@@ -276,7 +276,7 @@ export default function HomeProfile() {
                         </div>
 
                     </div>
-                    <FriendPopup trigger={buttonPopup} setTrigger={setButtonPopup} defaultUser={defaultUser} dataRequested={dataRequested} setDataRequested={setDataRequested}></FriendPopup>
+                    <FriendPopup trigger={buttonPopup} setTrigger={setButtonPopup} defaultUser={defaultUser} dataRequested={dataRequested} setDataRequested={setDataRequested} noti_number={noti_number} setNotiNumber={setNotiNumber}></FriendPopup>
                 </div>
 
             </div>
