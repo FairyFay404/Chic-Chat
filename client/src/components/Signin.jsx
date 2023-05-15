@@ -16,13 +16,13 @@ export default function Signin() {
     const [errorPassword, setErrorPassword] = useState(false);
 
     useEffect(() => {
-        const key = localStorage.getItem("WVJ7NSg5Pqa8fYNcstKz");
+        const key = sessionStorage.getItem("WVJ7NSg5Pqa8fYNcstKz");
         console.log(key);
 
         axios.post(urlAuth,{            
         },{
             headers: {
-                'Authorization': `Basic ${localStorage.getItem("token-access")}`
+                'Authorization': `Basic ${sessionStorage.getItem("token-access")}`
             }
         }).then(
             (res) => {
@@ -31,7 +31,7 @@ export default function Signin() {
                         navigate("/home")
                     }
                 }else if(res.data.message == "jwt expired"){
-                    localStorage.removeItem("token-access")
+                    sessionStorage.removeItem("token-access")
                     navigate("/")
                 }else{
 
@@ -46,32 +46,45 @@ export default function Signin() {
         navigate("/register");
     }
 
+    const setErrorDefault = () =>{
+        setErrorEmail(false)
+        setErrorPassword(false)
+    }
+
     async function handleSignin() {
         const urlSignin = baseURL + "/api/login"
-        const test = "http://localhost:3000/api/login"
-        console.log(email + " " + password)
         // POST request for check password is correct ? 
-        const res = await axios.post("http://localhost:3000/api/login", {
+        const res = await axios.post(urlSignin, {
             email: email,
             password: password
         });
+        
+        if(res.data.status == "fail"){
+             // set Default Error of each input for reset Error
+            setErrorDefault();
+
+            setError(true)
+            if(res.data.message == "Email not found"){
+                setErrorEmail(true);
+                setTextError(res.data.message)
+            }
+            if(res.data.message == "Incorrect password"){
+                setErrorPassword(true);
+                setTextError(res.data.message);
+            }
+
+        }
 
         if (res.data.status == "success") {
             alert(res.data.message);
-            // set any token localStorage
+            // set any token sessionStorage
             console.log("token: " + res.data.token);
-            localStorage.setItem("token-access", res.data.token);
+            sessionStorage.setItem("token-access", res.data.token);
+            sessionStorage.setItem("user-email", res.data.userInfo.email);
+            sessionStorage.setItem("user-docId", res.data.userInfo.userDocId);
             navigate("/home");
         }
-        else {
-
-            // if wrong email
-            // else wrong Password
-
-            alert(res.data.message);
-            navigate("/")
-            // navigate("/");
-        }
+    
     }
 
     return (

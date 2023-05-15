@@ -1,7 +1,8 @@
 import express from "express";
 import { ref, set, get } from "firebase/database";
-import { collection, addDoc, Timestamp, query, where, getDocs} from "firebase/firestore";
+import { collection, addDoc, Timestamp, query, where, getDocs, doc, getDoc } from "firebase/firestore";
 import { database } from "../firebase-config.js";
+import { findUserDocById } from "../firebase_query.js";
 
 const router = express.Router();
 
@@ -22,8 +23,8 @@ const router = express.Router();
 
 /* for create a new conversation */
 /* path for create conversation (chat lobby) */
-router.post('/', async (req,res) => {
 
+router.post('/', async (req, res) => {
     try {
         const newConversation = await addDoc(collection(database, "conversation"), {
             member: [
@@ -34,45 +35,64 @@ router.post('/', async (req,res) => {
             updateAt: new Date()
         });
         console.log("Document written with ID: ", newConversation.id);
-        res.status(200).json({message : "successfull add a new conversation"})
+        res.status(200).json({ message: "successfull add a new conversation" })
     }
-    catch (err){
+    catch (err) {
         console.error("Error adding document: ", err);
     }
 })
 
 /* path for get conversation that user is a member  */
-router.get('/:userId', async (req, res)=>{
-
-    try{
-
+router.get('/:userId', async (req, res) => {
+    try {
         const conversationRef = collection(database, "conversation");
         const queryData = query(conversationRef, where("member", "array-contains", req.params.userId));
         // use any contains for query array ?
         const querySnapShot = await getDocs(queryData);
 
         // check result == 0 ? 
-        if(!querySnapShot.empty){
+        if (!querySnapShot.empty) {
+            
             // it reurn doc of conversation id that user are member
-            const listConversation = querySnapShot.docs.map((doc)=>({
+            const listConversation = querySnapShot.docs.map((doc) => ({
                 id: doc.id, ...doc.data()
             }));
 
+            /* find id of partner in conversation */
+            const partnerId = listConversation.map((element) =>{
+                return element.member.find((user) => (user !== req.params.userId));
+            })
+            
+            /* looping for get partner data  */
+            const partnerList = [];
+            await Promise.all(partnerId.map(async (user) => {
+                const partnerInfo = await findUserDocById(user);
+                partnerList.push(partnerInfo);
+            }))
+
+            /* final data for listConversation */
+            const newListConversation = [];
+            listConversation.map((user, index) => {
+                /* merge 2 json data */
+                const mergeData = {
+                    ...user,
+                    partnerInfo : partnerList[index]
+                }
+                newListConversation.push(mergeData);
+            });
+
+            
             // for call data can use method toDate() to convert it to date object 
-            res.status(200).json({status: "success", conversation: listConversation});
+            res.status(200).json({ status: "success", conversation: newListConversation, partnerId:partnerId });
             return;
         }
-        else{
-            res.status(422).json({status: "success", message: "No conversation"});
+        else {
+            res.status(422).json({ status: "success", message: "No conversation" });
             return;
         }
-    
-        
-    }catch(err){
-
-        res.status(500).json({status: "fail", message: err});
+    } catch (err) {
+        res.status(500).json({ status: "fail", message: err.message });
         return;
-
     }
 
 });

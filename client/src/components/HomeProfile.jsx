@@ -4,6 +4,9 @@ import Friendbox from './subcomponents/Friendbox'
 import AddFriend from './subcomponents/AddFriend'
 import FriendPopup from './subcomponents/FriendPopup'
 import {EyeInvisibleOutlined, EyeOutlined} from "@ant-design/icons"
+import axios from 'axios'
+import { baseURL } from '../baseURL'
+
 export default function HomeProfile() {
     const [username, setUsername] = useState("Eiei")
     const [password, setPassword] = useState("123456")
@@ -13,32 +16,91 @@ export default function HomeProfile() {
     const [statusSearch, setStatusSearch] = useState(false);
     const [statusEdit, setStatusEdit] = useState(false);
     const [statusError, setStatusError] = useState(false);
-    const [textError, setTextError] = useState("");
-    const [noti_number, setNotiNumber] = useState("5");    
-    const [buttonPopup, setButtonPopup] = useState(false);
+    const [textError, setTextError] = useState("");   
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [confirmpasswordVisible, setConfirmPasswordVisible] = useState(false);
+    const [noti_number, setNotiNumber] = useState("5");
+    const [buttonPopup, setButtonPopup] = useState(0);
 
-    useEffect(()=>{
-        
-    },[])
+    const [defaultUser, setDefaultUser] = useState({})
+    const [allconversation, setAllconversation] = useState([]) // (similarly friend)
+    const [dataRequested, setDataRequested] = useState()
+
+    const urlgetInfo = baseURL + "/api/user/getInfo"
+    const urlupdateInfo = baseURL + "/api/user/updateInfo"
+    useEffect(() => {
+        const fecthData = async () => {
+            const res = await axios.post(urlgetInfo, {}, {
+                headers: {
+                    'Authorization': `Basic ${sessionStorage.getItem("token-access")}`
+                }
+            })
+            setDefaultUser(res.data.user) // personal information (id, username, password, )
+            setUsername(res.data.user.username)
+            setPassword(res.data.user.password)
+            setEmail(res.data.user.email)
+
+            // All conversation of **USER** (similarly friend)
+            const urlgetConversation = baseURL + "/api/conversation/" + res.data.user.id
+            const resConversation = await axios.get(urlgetConversation)
+            setAllconversation(resConversation.data.conversation)
+        }
+        fecthData();
+
+    }, [])
+
+    useEffect(() => {
+        if (dataRequested != undefined) {
+            if (dataRequested.status == "success accept") { // add conversation when accpet only
+                const changeConversationPopup = () => {
+                    setAllconversation([...allconversation, { ...dataRequested.dataConversation }])
+                    // console.log([...allconversation, {...dataRequested.dataConversation}])
+                }
+                changeConversationPopup()
+            }
+        }
+    }, [dataRequested])
+
+    useEffect(() => {
+        console.log(allconversation)
+    }, [allconversation])
+
+
 
     const handleEdit = (e) => {
         e.preventDefault();
         setStatusEdit(!statusEdit)
         setStatusError(false)
     }
+
     const handleSave = (e) => {
         e.preventDefault();
+        console.log(username + password + email)
+
         if (confirmpassword != password) {
             setStatusError(true)
             setTextError("Password not match. Please try again.")
         } else {
-            setStatusError(false)
-            setStatusEdit(!statusEdit)
-            //alert(username + password + email)
+            axios.post(urlupdateInfo, {
+                username: username,
+                password: password,
+                email: email
+            }, {
+                headers: {
+                    'Authorization': `Basic ${sessionStorage.getItem("token-access")}`
+                }
+            }).then((res) => {
+                if (res.data.status == "fail") {
+                    setStatusError(true)
+                    setTextError(res.data.message)
+                } else {
+                    alert(res.data.message)
+                    sessionStorage.removeItem("token-access")
+                    sessionStorage.setItem("token-access", res.data.token);
+                    location.reload()
+                }
+            })
         }
-
     }
     const changeStatus = () => {
         setStatusAddfriend(!statusAddfriend)
@@ -48,6 +110,9 @@ export default function HomeProfile() {
     const handleSearch = () => {
         setStatusSearch(!statusSearch)
     }
+
+
+
     return (
         <>
             <div className="bg-gradient-to-b from-[#1565D8] to-[#9EE8FF] h-screen font-Rubik">
@@ -75,7 +140,6 @@ export default function HomeProfile() {
                                         </div>
                                     </div>
                                     <div className="flex flex-row gap-[18px] items-center">
-
                                         <button className={` ${statusAddfriend ? "hidden" : ""} w-[235px] h-[59px] rounded-[20px] bg-white flex items-center text-[20px] text-[#072653] font-normal`} onClick={changeStatus}>
                                             <img src="/addfriend icon.png" className='pe-[14px] ms-[32px]' /> Add friend
                                         </button>
@@ -101,15 +165,21 @@ export default function HomeProfile() {
 
                                 <div className="w-[1063px] h-[386px] rounded-[20px] bg-white mt-[22px] bg-opacity-70 overflow-y-scroll">
                                     <div className={` ${statusSearch ? "hidden" : ""}`}>
-                                        <Friendbox name={"Meaw"} count_message={5} />
+                                        {
+                                            allconversation?.map((conversation, i) => {
+                                                return <Friendbox name={conversation.partnerInfo.username} conversationId={conversation.id} count_message={3} key={i} />
+                                            })
+                                        }
+                                        {/* <Friendbox name={"Meaw"} count_message={5} />
                                         <Friendbox name={"Aom"} count_message={3} />
-                                        <Friendbox name={"Party"} count_message={1} />
+                                        <Friendbox name={"Party"} count_message={1} /> */}
                                     </div>
 
                                     <div className={` ${statusSearch ? "" : "hidden"}`}>
-                                        <AddFriend name={"Meaw"} isFriend={false} />
+                                        {/* 
+                                        <AddFriend name={"Meaw"} isFriend={false} /> 
                                         <AddFriend name={"Aom"} isFriend={true} />
-                                        <AddFriend name={"Party"} isFriend={true} />
+                                        <AddFriend name={"Party"} isFriend={true} /> */}
                                     </div>
 
                                 </div>
@@ -121,15 +191,15 @@ export default function HomeProfile() {
                         ">
                             <h1 className='text-[50px] text-[#1565D8] font-semibold'>Profile</h1>
                             <img src="/MyProfile.png" alt="" />
-                            <h1 className='text-[40px] font-medium mb-[39px]'>Eiei</h1>
+                            <h1 className='text-[40px] font-medium mb-[39px]'>{defaultUser.username}</h1>
                             <div className="grid gap-[11px]">
                                 <div className="w-[460px] h-[59px] bg-white bg-opacity-70 rounded-[20px]
                                 ps-[28px] font-medium text-[20px] text-[#072653]
                                 flex items-center">
                                     <label className='pe-[13px] text-[24px] text-[#000000] '>Username :</label>
                                     {statusEdit ?
-                                        <input type="text" className='bg-transparent ps-[10px] outline-0' value={username}  placeholder="Enter your new username" onChange={e => { setUsername(e.target.value) }} /> :
-                                        <label className='ps-[10px] text-[20px] text-[#07265380] '>{username}</label>
+                                        <input type="text" className='bg-transparent ps-[10px] outline-0' value={username} placeholder="Enter your new username" onChange={e => { setUsername(e.target.value) }} /> :
+                                        <label className='ps-[10px] text-[20px] text-[#07265380] '>{defaultUser.username}</label>
                                     }
                                     
                                 </div>
@@ -138,8 +208,8 @@ export default function HomeProfile() {
                                 flex items-center">
                                     <label className='pe-[13px] text-[24px] text-[#000000] '>Password :</label>
                                     {statusEdit ?
-                                        <input type={passwordVisible ? "text" : "password"} className='bg-transparent ps-[10px] outline-0 placeholder:text-[16px]' value={password}  placeholder="Enter your new password" onChange={e => { setPassword(e.target.value) }} /> :
-                                        <label className=' w-[250px] ps-[10px] text-[20px] text-[#07265380] '>*********</label>
+                                        <input type={passwordVisible ? "text" : "password"} className='bg-transparent ps-[10px] outline-0' value={password} placeholder="Enter your new password" onChange={e => { setPassword(e.target.value) }} /> :
+                                        <input type="password" className='bg-transparent ps-[10px] text-[#07265380] outline-0' value={defaultUser.password} placeholder="Enter your new password" onChange={e => { setPassword(e.target.value) }} disabled />
                                     }
                                     <div className={` ${statusEdit ? "flex absolute  right-[46px]"  : "hidden"}  `}  onClick={() => setPasswordVisible(!passwordVisible)}>
                                         {
@@ -168,7 +238,7 @@ export default function HomeProfile() {
                                     <label className='pe-[13px] text-[24px] text-[#000000] '>E-mail :</label>
                                     {statusEdit ?
                                         <input type="email" className='bg-transparent ps-[10px] outline-0 ' value={email} placeholder="Enter your new email" onChange={e => { setEmail(e.target.value) }} /> :
-                                        <label className='ps-[10px] text-[20px] text-[#07265380] '>{email}</label>
+                                        <label className='ps-[10px] text-[20px] text-[#07265380] '>{defaultUser.email}</label>
                                     }
                                 </div>
                                 <div className={` ${statusError ? " ms-7 flex justify-start items-center" : "hidden"}  `}>
@@ -176,22 +246,23 @@ export default function HomeProfile() {
                                     <label className='text-[#DC1414] ms-[5.28px]'>{textError}</label>
                                 </div>
                             </div>
-                            {statusEdit ? <div className="mt-[53px] text-[20px] text-white font-semibold font-Montserrat">
-                                <button className='bg-gradient-to-b from-[#072653] via-[#1565D8] to-[#2FBCE8] w-[170px] h-[59px] rounded-[50px] mx-[15px]' onClick={handleSave}>Save</button>
-                                <button className='bg-gradient-to-b from-[#DB3D3D] via-[#FC6262] to-[#FF9595] w-[170px] h-[59px] rounded-[50px]' onClick={handleEdit}>Cancel</button>
-                            </div>
-                                :
+                            {statusEdit ?
+                                <div className="mt-[53px] text-[20px] text-white font-semibold font-Montserrat">
+                                    <button className='bg-gradient-to-b from-[#072653] via-[#1565D8] to-[#2FBCE8] w-[170px] h-[59px] rounded-[50px] mx-[15px]' onClick={handleSave}>Save</button>
+                                    <button className='bg-gradient-to-b from-[#DB3D3D] via-[#FC6262] to-[#FF9595] w-[170px] h-[59px] rounded-[50px]' onClick={handleEdit}>Cancel</button>
+                                </div> :
                                 <button onClick={handleEdit} className='w-[260px] h-[59px] rounded-[50px] mt-[53px]
-                            bg-gradient-to-b from-[#072653] via-[#1565D8] to-[#2FBCE8]
-                            text-[20px] text-white font-semibold font-Montserrat
-                            hover:border-[2px] hover:border-[#178AAE] transition duration-300 ease-in-out hover:scale-110
-                            '>Edit your profile</button>}
+                                bg-gradient-to-b from-[#072653] via-[#1565D8] to-[#2FBCE8]
+                                text-[20px] text-white font-semibold font-Montserrat
+                                hover:border-[2px] hover:border-[#178AAE] transition duration-300 ease-in-out hover:scale-110
+                                '>Edit your profile</button>
+                            }
                         </div>
-                    
+
                     </div>
-                    <FriendPopup trigger={buttonPopup} setTrigger={setButtonPopup}></FriendPopup>
-                </div> 
-                 
+                    <FriendPopup trigger={buttonPopup} setTrigger={setButtonPopup} defaultUser={defaultUser} dataRequested={dataRequested} setDataRequested={setDataRequested}></FriendPopup>
+                </div>
+
             </div>
         </>
     )

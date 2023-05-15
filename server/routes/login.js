@@ -3,8 +3,7 @@ import { ref, set, get } from "firebase/database";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { database } from "../firebase-config.js";
 import jwt from "jsonwebtoken";
-import bcrypt from 'bcrypt';
-
+import CryptoJS from "crypto-js";
 
 /* jwt.sign({
   data: 'foobar'
@@ -13,6 +12,7 @@ import bcrypt from 'bcrypt';
 
 const router = express.Router();
 const privateKey = "skjfnCDC4GS65DF6545df4";
+const secretAES = "d13sg5da5yg36s"
  
 /* login request schema */
 
@@ -34,7 +34,7 @@ router.post('/', async (req, res)=> {
     try {
         const queryData = query(collection(database, "users"), where("email", "==", req.body.email));
 
-        const querySnapShot = await  getDocs(queryData);
+        const querySnapShot = await getDocs(queryData);
 
         if(!querySnapShot.empty){
             querySnapShot.forEach((doc)=>{
@@ -43,19 +43,35 @@ router.post('/', async (req, res)=> {
                 
                 // generated token
                 const token = jwt.sign({email: req.body.email}, privateKey, { expiresIn: '1h' });
-                const hashPassword = doc.data().password; 
+                const hashPassword = doc.data().password;
+
                 // compare password on request and hashpassword (bcrypt)
                 // if match => res.status(200).json({status: "success", message: "Login Successfully", token: ""})
-                bcrypt.compare(req.body.password, hashPassword, function(err, isMatch) {
-                    if(isMatch){
-                        res.status(200).json({status: "success", message: "Login Successfully", token: token});
-                        return;
-                    }
-                    else{
-                        res.status(200).json({status: "fail", message: "Incorrect password"});
-                        return; 
-                    }
-                });
+
+                const bytes = CryptoJS.AES.decrypt(hashPassword, secretAES);
+                const plainText = bytes.toString(CryptoJS.enc.Utf8);
+                const userInfo = {
+                    email: doc.data().email,
+                    userDocId: doc.id
+                }
+                if(req.body.password == plainText){
+                    res.status(200).json({status: "success", message: "Login Successfully", token: token, userInfo});
+                    return;
+                }
+                else{
+                    res.status(200).json({status: "fail", message: "Incorrect password"});
+                }
+
+                // bcrypt.compare(req.body.password, hashPassword, function(err, isMatch) {
+                //     if(isMatch){
+                //         res.status(200).json({status: "success", message: "Login Successfully", token: token});
+                //         return;
+                //     }
+                //     else{
+                //         res.status(200).json({status: "fail", message: "Incorrect password"});
+                //         return; 
+                //     }
+                // });
 
             })
         }

@@ -12,29 +12,29 @@ export default function Navbar() {
         axios.post(urlAuth,{            
         },{
             headers: {
-                'Authorization': `Basic ${localStorage.getItem("token-access")}`
+                'Authorization': `Basic ${sessionStorage.getItem("token-access")}`
             }
         }).then(
             (res) => {
                 if(res.data.status == "success"){
 
                 }else if(res.data.message == "jwt expired"){
-                    localStorage.removeItem("token-access")
+                    sessionStorage.removeItem("token-access")
                     navigate("/")
                 }else{
-                    alert(res.data.message)
                     navigate("/")
+                    alert("Please login before")
                 }
+                console.log(res.data.message)
             }
         )
     },[])
-
 
     
     const handleLogout = () => {
         alert("logout")
         navigate('/')
-        localStorage.removeItem("token-access")
+        sessionStorage.removeItem("token-access")
     }
 
     const backToHome = () => {

@@ -1,8 +1,15 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
-export default function Inbox({ person, lastmessage, lastsender, count_message, time, focusinbox, setFocusinbox, index, setChatIdNow, chatId }) {
+export default function Inbox({ person, lastmessage, lastsender, count_message, time, focusinbox, setFocusinbox, index, chatIdNow, setChatIdNow, chatId }) {
 
     const [count, setCount] = useState(count_message);
+
+    useEffect(()=>{
+        console.log("chatIdnow : " + chatIdNow)
+        if(chatIdNow == chatId){
+            handleIbox()
+        }
+    },[chatIdNow])
     
     const handleIbox = () => {
         setFocusinbox(index);
