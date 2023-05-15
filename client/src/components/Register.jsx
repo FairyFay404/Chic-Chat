@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import axios, { Axios } from 'axios'
 import { useNavigate } from "react-router-dom";
 import { baseURL } from '../baseURL';
 import forge from 'node-forge';
@@ -16,9 +16,28 @@ export default function Register() {
     const [errorPassword, setErrorPassword] = useState(false)
     const [errorConfirmPassword, setErrorConfirmPassword] = useState(false)
     const [errorEmail, setErrorEmail] = useState(false)
+    var rsa = forge.pki.rsa;
 
 
     const navigate = useNavigate();
+
+
+    const savePublicKey = async(publicKeyPem,email)=>{
+        const savePublicKeyURL = "/api/rsaKey/saveKey";
+        const res = await axios.post(baseURL+savePublicKeyURL,{
+            email: email,
+            publicKey: publicKeyPem
+        })
+
+        if(res.data.status == "success"){
+            console.log(res.data.message);
+            return;
+        }
+        else{
+            console.log(res.data.message);
+            return;
+        }
+    }
 
     const generatedUserKey = () => {
 
@@ -73,8 +92,29 @@ export default function Register() {
                 setTextError(res.data.message);
             }
             if (res.data.status == "success") {
+                /* GEN AES KEY */
                 let userKeyObjString = JSON.stringify(generatedUserKey());
-                sessionStorage.setItem(res.data.userId, userKeyObjString);
+                sessionStorage.setItem("aesKey-"+res.data.userId, userKeyObjString);
+
+                /* GEN RSA KEY */
+                rsa.generateKeyPair({bits: 2048, workers: 2}, (err, keypair)=>{
+                    if(err){
+                        console.log(err);
+                        return;
+                    }
+                    else{
+                        /* save RSAkey */
+                        const publicKeyPem = forge.pki.publicKeyToPem(keypair.publicKey);
+                        const privateKeyPem = forge.pki.privateKeyToPem(keypair.privateKey)
+                        localStorage.setItem("pubKey-"+res.data.userId,publicKeyPem);
+                        localStorage.setItem("privateKey-"+res.data.userId,privateKeyPem);
+                        /* fetching public key for saving */
+                        savePublicKey(publicKeyPem, email);
+                        return;
+
+                    }
+                })
+
                 alert(res.data.message)
                 navigate("/");
             }
