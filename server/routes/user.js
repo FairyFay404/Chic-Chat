@@ -117,11 +117,34 @@ router.get('/getFriendRequestId/:userId', async (req, res) => {
     }
 })
 
+router.post('/addFriend', async (req, res) =>{
+    try{
+        const docRef = doc(database, "users", req.body.friendId);
+        const docSnap = await getDoc(docRef);
+
+        const arrayOnrequest = docSnap.data().onRequest
+        arrayOnrequest.push(req.body.myId)
+
+        await updateDoc(docRef, {
+            onRequest : arrayOnrequest
+        });
+        return res.json({ status: "success", message : "Success add friend", arrayOnrequest: arrayOnrequest })
+    }catch(err){
+        return res.json({ status: "fail", message : err.message })
+    }
+})
+
 router.post('/changeStatusRequest', async (req, res) => {
     try {
         const user = await findUserDocById(req.body.id)
         const docRef = doc(database, "users", user.id);
+
+        const friendRef = doc(database, "users", req.body.friendId);
+        const friendSnap = await getDoc(docRef);
+
         if (req.body.isaccept == true) {
+            // ---------------------- Part me ----------------------------
+
             // Add FriendId to Array friend and Delete FriendId from Array onRequest
 
             // Add FriendId to Array friend 
@@ -134,10 +157,21 @@ router.post('/changeStatusRequest', async (req, res) => {
                 }
             })
 
-            // update now
+            // update now my collection
             await updateDoc(docRef, {
                 friends : user.friends,
                 onRequest : user.onRequest
+            });
+
+            // ---------------------- Part Friend ----------------------------
+            // update now friend's collection
+
+            // add friend with my docId in friend's collection
+            const arrayFriend = friendSnap.data().friends
+            arrayFriend.push(user.id) 
+            console.log(arrayFriend)
+            await updateDoc(friendRef, {
+                friends : arrayFriend,
             });
 
             // create conversion between I and Friend  
@@ -174,6 +208,24 @@ router.post('/changeStatusRequest', async (req, res) => {
         return res.json({ status: "fail", message : err.message })
     }
 
+})
+
+router.post('/searchfriend', async (req, res) => {
+    try{
+        const userRef = collection(database, "users");
+        const userSnap = await getDocs(userRef)
+        const allUser = userSnap.docs.map((user)=>{
+            return {id: user.id, ...user.data()}
+        })
+
+        const temp = allUser.map((user)=>{
+            return user.username == "meaw01" || user.username ==  "meaw02"
+        })
+        return res.json({ status: "success", message : allUser, temp : temp})
+
+    }catch(err){
+        return res.json({ status: "fail", message : err.message })
+    }
 })
 
 export default router
