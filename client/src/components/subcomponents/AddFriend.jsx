@@ -1,12 +1,19 @@
+import axios from 'axios';
 import React, { useState } from 'react'
+import { baseURL } from '../../baseURL';
 
-export default function AddFriend({name,isFriend}) {
+export default function AddFriend({name,isFriend, myId, friendsId}) {
     const [valueisFriend, setValueisFriend] = useState(isFriend);
     
 
     const handleAddfriend = () => {
         setValueisFriend(true)
-        // call API update isFriend with name(username)
+        const urlAddfriend = baseURL + "/api/user/addFriend"
+        axios.post(urlAddfriend, {
+            myId : myId,
+            friendId : friendsId
+        })
+        // call API update isFriend with name(document id friend)
     }
 
 

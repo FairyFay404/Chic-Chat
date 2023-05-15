@@ -3,6 +3,7 @@ import Navbar from './Navbar'
 import Friendbox from './subcomponents/Friendbox'
 import AddFriend from './subcomponents/AddFriend'
 import FriendPopup from './subcomponents/FriendPopup'
+import {EyeInvisibleOutlined, EyeOutlined} from "@ant-design/icons"
 import axios from 'axios'
 import { baseURL } from '../baseURL'
 
@@ -11,17 +12,21 @@ export default function HomeProfile() {
     const [password, setPassword] = useState("123456")
     const [confirmpassword, setConfirmpassword] = useState("")
     const [email, setEmail] = useState("bob@mail.com")
+    const [search, setSearch] = useState("")
     const [statusAddfriend, setStatusAddfriend] = useState(false)
     const [statusSearch, setStatusSearch] = useState(false);
     const [statusEdit, setStatusEdit] = useState(false);
     const [statusError, setStatusError] = useState(false);
-    const [textError, setTextError] = useState("");
+    const [textError, setTextError] = useState("");   
+    const [passwordVisible, setPasswordVisible] = useState(false);
+    const [confirmpasswordVisible, setConfirmPasswordVisible] = useState(false);
     const [noti_number, setNotiNumber] = useState("5");
     const [buttonPopup, setButtonPopup] = useState(0);
 
     const [defaultUser, setDefaultUser] = useState({})
     const [allconversation, setAllconversation] = useState([]) // (similarly friend)
     const [dataRequested, setDataRequested] = useState()
+    const [dataSearch, setDataSearch] = useState([])
 
     const urlgetInfo = baseURL + "/api/user/getInfo"
     const urlupdateInfo = baseURL + "/api/user/updateInfo"
@@ -106,8 +111,19 @@ export default function HomeProfile() {
 
     const handleSearch = () => {
         setStatusSearch(!statusSearch)
+        const urlSearchfriend = baseURL + "/api/user/searchfriend"
+        axios.post(urlSearchfriend, {
+            word: search,
+            friends: defaultUser.friends,
+            myId: defaultUser.id
+        }).then((res)=>{
+            setDataSearch(res.data.search)
+        })
     }
 
+    useEffect(()=>{
+        console.log(dataSearch)
+    },[dataSearch])
 
 
     return (
@@ -164,7 +180,7 @@ export default function HomeProfile() {
                                     <div className={` ${statusSearch ? "hidden" : ""}`}>
                                         {
                                             allconversation?.map((conversation, i) => {
-                                                return <Friendbox name={conversation.partnerInfo.username} conversationId={conversation.id} count_message={3} key={i} />
+                                                return <Friendbox name={conversation.partnerInfo.username} conversationId={conversation.id} count_message={3} />
                                             })
                                         }
                                         {/* <Friendbox name={"Meaw"} count_message={5} />
@@ -173,10 +189,13 @@ export default function HomeProfile() {
                                     </div>
 
                                     <div className={` ${statusSearch ? "" : "hidden"}`}>
-                                        {/* 
-                                        <AddFriend name={"Meaw"} isFriend={false} /> 
-                                        <AddFriend name={"Aom"} isFriend={true} />
-                                        <AddFriend name={"Party"} isFriend={true} /> */}
+                                        {
+                                            dataSearch?.map((user,i)=>{
+                                                return <AddFriend name={user.username} isFriend={false} myId={defaultUser.id} friendsId={user.id} key={i} />
+                                                // return <AddFriend name={user.username} isFriend={true} />
+                                            })
+                                        }
+                                        {/* <AddFriend name={"meaw"} isFriend={true} myId={"1234"} friendsId={"5678"} /> */}
                                     </div>
 
                                 </div>
@@ -198,25 +217,35 @@ export default function HomeProfile() {
                                         <input type="text" className='bg-transparent ps-[10px] outline-0' value={username} placeholder="Enter your new username" onChange={e => { setUsername(e.target.value) }} /> :
                                         <label className='ps-[10px] text-[20px] text-[#07265380] '>{defaultUser.username}</label>
                                     }
-
+                                    
                                 </div>
-                                <div className="w-[460px] h-[59px] bg-white bg-opacity-70 rounded-[20px]
+                                <div className="relative w-[460px] h-[59px] bg-white bg-opacity-70 rounded-[20px]
                                 ps-[28px] font-medium text-[20px] text-[#072653]
                                 flex items-center">
                                     <label className='pe-[13px] text-[24px] text-[#000000] '>Password :</label>
                                     {statusEdit ?
-                                        <input type="password" className='bg-transparent ps-[10px] outline-0' value={password} placeholder="Enter your new password" onChange={e => { setPassword(e.target.value) }} /> :
+                                        <input type={passwordVisible ? "text" : "password"} className='bg-transparent ps-[10px] outline-0' value={password} placeholder="Enter your new password" onChange={e => { setPassword(e.target.value) }} /> :
                                         <input type="password" className='bg-transparent ps-[10px] text-[#07265380] outline-0' value={defaultUser.password} placeholder="Enter your new password" onChange={e => { setPassword(e.target.value) }} disabled />
                                     }
+                                    <div className={` ${statusEdit ? "flex absolute  right-[46px]"  : "hidden"}  `}  onClick={() => setPasswordVisible(!passwordVisible)}>
+                                        {
+                                            passwordVisible ? <EyeOutlined className='  bg-white bg-opacity-80 text-[28px]'/> : <EyeInvisibleOutlined className='  bg-white bg-opacity-80 text-[28px]'/>
+                                        }
+                                    </div>
                                 </div>
-                                <div className={` ${statusEdit ? "w-[460px] h-[75px] bg-white bg-opacity-70 rounded-[20px] ps-[28px] font-medium text-[20px] text-[#072653] flex items-center"
-                                    : "hidden"}  `}
+                                <div className={` ${statusEdit ? " relative w-[460px] h-[75px] bg-white bg-opacity-70 rounded-[20px] ps-[28px] font-medium text-[20px] text-[#072653] flex items-center"
+                                : "hidden"}  `}
                                 >
                                     <div className="flex flex-row items-center">
                                         <label className='text-[24px] text-[#000000] w-[123px] '>Confirm Password</label>
                                         <label className='pe-[13px] text-[24px] text-[#000000] w-[10px] '>:</label>
                                     </div>
-                                    <input type="password" className='bg-transparent ps-[10px] outline-0' placeholder="Enter your new password" onChange={e => { setConfirmpassword(e.target.value) }} />
+                                    <input type={confirmpasswordVisible ? "text" : "password"} className=' outline-none bg-transparent ps-[10px] outline-0 placeholder:text-[16px]' placeholder="Enter your new password" onChange={e => { setConfirmpassword(e.target.value) }} />
+                                    <div className={` ${statusEdit ? "flex absolute  right-[46px]"  : "hidden"}  `}  onClick={() => setConfirmPasswordVisible(!confirmpasswordVisible)}>
+                                        {
+                                            confirmpasswordVisible ? <EyeOutlined className='  bg-white bg-opacity-80 text-[28px]'/> : <EyeInvisibleOutlined className='  bg-white bg-opacity-80 text-[28px]'/>
+                                        }
+                                    </div>
                                 </div>
                                 <div className="w-[460px] h-[59px] bg-white bg-opacity-70 rounded-[20px]
                                 ps-[28px] font-medium text-[20px] text-[#072653]
