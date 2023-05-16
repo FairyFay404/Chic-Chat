@@ -114,10 +114,12 @@ router.post('/', async (req, res) => {
                     updateAt: new Date(),
                     proprofilePicture: "",
                     onRequest: [],
-                    friends: []
+                    friends: [],
+                    aesKey: [],
+
                 });
                 console.log("Documents ID of users " + newUser.id)
-                res.status(200).json({ status: "success", message: "successful register" })
+                res.status(200).json({ status: "success", message: "successful register", userId:newUser.id})
                 return;
             } catch (err) {
                 console.log(err);
@@ -125,7 +127,7 @@ router.post('/', async (req, res) => {
                 return;
             }
         } else {
-            res.status(200).json({ status: "fail", message: "user are exits in database", type: "username" })    
+            res.status(200).json({ status: "fail", message: "user are exits in database", type: "username"})    
         }
     }
     else {

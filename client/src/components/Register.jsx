@@ -43,12 +43,10 @@ export default function Register() {
 
         /* RANDOM AES KEY [32 bytes = 256 bits key] */
         const aesKey = forge.random.getBytesSync(32);
-        /* create cipher object in cbc mode AES Encryption */
-        const cipher = forge.cipher.createCipher('AES-CBC', aesKey);
         /* craete iv (initialization vector) by start() */
         const iv = forge.random.getBytesSync(16);
 
-        return { cipher: cipher, aesKey: aesKey, iv: iv };
+        return { aesKey: aesKey, iv: iv };
     }
 
     const setErrorDefault = () => {
@@ -94,7 +92,7 @@ export default function Register() {
             if (res.data.status == "success") {
                 /* GEN AES KEY */
                 let userKeyObjString = JSON.stringify(generatedUserKey());
-                sessionStorage.setItem("aesKey-"+res.data.userId, userKeyObjString);
+                localStorage.setItem("aesKey-"+res.data.userId, userKeyObjString);
 
                 /* GEN RSA KEY */
                 rsa.generateKeyPair({bits: 2048, workers: 2}, (err, keypair)=>{

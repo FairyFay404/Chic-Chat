@@ -23,16 +23,19 @@ export default function Chat() {
         try {
             const res = await axios.get("http://localhost:3000/api/conversation/"+ userDocId);
             setChatInfo(res.data.conversation);
+            return;
 
         } catch (error) {
             console.log(error);
+            return;
         }
 
     }
 
     const updateFriendId = async () =>{
         const oldChatInfoLength = chatInfo.length;
-        await getConversation(userId);
+        const userDocId = sessionStorage.getItem("user-docId");
+        await getConversation(userDocId);
         
         /* check if length is not the same*/
         if( oldChatInfoLength != chatInfo.length) {
@@ -56,6 +59,7 @@ export default function Chat() {
     useEffect(() => {
 
         socket.current = io("http://localhost:8900");
+        var updateFriendIntervalId;
 
         /* check first is user-docId exist ? */
         if (sessionStorage.getItem("user-docId") != null) {
@@ -68,7 +72,7 @@ export default function Chat() {
             if (location.state != null)
                 setChatIdNow(location.state.conversationId)
 
-            const updateFriendIntervalId = setInterval(updateFriendId, 3000);
+            updateFriendIntervalId = setInterval(updateFriendId, 3000);
         }
 
         return () => {

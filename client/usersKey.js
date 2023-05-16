@@ -9,7 +9,8 @@ import forge from 'node-forge';
 
 /* function for add user key in arrays */
 
-export const encryptDataAES = (cipherObj, plaintext, iv) => {
+export const encryptDataAES = (aesKey, iv, plaintext) => {
+    const cipherObj = forge.cipher.createCipher('AES-CBC', aesKey);
     cipherObj.start({iv: iv});
     cipherObj.update(forge.util.createBuffer(plaintext));
     cipherObj.finish();
@@ -17,8 +18,8 @@ export const encryptDataAES = (cipherObj, plaintext, iv) => {
     return encryptedData;
 }
 
-export const decryptDataAES = (cipherObj, aesKey, iv, ciphertext) => {
-    const decipher = forge.cipherObj.createDecipher('AES-CBC', aesKey);
+export const decryptDataAES = (aesKey, iv, ciphertext) => {
+    const decipher = forge.cipher.createDecipher('AES-CBC', aesKey);
     decipher.start({iv: iv});
     decipher.update(forge.util.createBuffer(ciphertext));
     decipher.finish();
@@ -28,12 +29,12 @@ export const decryptDataAES = (cipherObj, aesKey, iv, ciphertext) => {
 
 export const encryptDataRSA = (plaintext, publicKeyPem) => {
     const publicKey = forge.pki.publicKeyFromPem(publicKeyPem);
-    const encryptData = publicKey.encrypt(plaintext);
+    const encryptData = publicKey.encrypt(plaintext, 'RSA-OAEP');
     return encryptData;
 }
 
 export const decryptDataRSA = (ciphertext, privateKeyPem) =>{
     const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
-    const decryptData = privateKey.decrypt(ciphertext);
+    const decryptData = privateKey.decrypt(ciphertext, 'RSA-OAEP');
     return decryptData;
 }
