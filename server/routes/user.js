@@ -22,6 +22,9 @@ router.post('/updateInfo', async (req, res) => {
         const querySnapShot = await getDocs(queryData);
 
         // For check new email is used ?
+        if(req.body.email.length == 0){
+            return res.status(200).json({ status: "fail", message: "Please, type your email", type: "email" })
+        }
         const queryData2 = query(collection(database, "users"), where("email", "==", req.body.email));
         const querySnapShot2 = await getDocs(queryData2);
 
