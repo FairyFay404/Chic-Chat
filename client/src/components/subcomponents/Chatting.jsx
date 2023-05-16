@@ -15,16 +15,13 @@ import { baseURL } from '../../baseURL';
     ]
 } */
 
-export default function Chatting({ name, chatIdNow, chatId, index, socket, conversation}) {
+export default function Chatting({ name, chatIdNow, chatId, index, socket, conversation, setRealTime }) {
     const [messages, setMessages] = useState([]);
     const [newmessage, setNewMessage] = useState("");
     const [arrivalMessage, setArrivalMessage] = useState(null);
     const [userId, setUserId] = useState("");
     const scrollRef = useRef();
     const addMessageURL = "/api/messages/add";
-
-
-    
 
     useEffect(() =>{
         /* set userId */
@@ -147,6 +144,7 @@ export default function Chatting({ name, chatIdNow, chatId, index, socket, conve
                     else {
                         const timestampValue = message.createAt.seconds * 1000 + message.createAt.nanoseconds / 1000000;
                         time = new Date(timestampValue);
+                        setRealTime(time)
                     }
 
                     if(message.senderId == userId){

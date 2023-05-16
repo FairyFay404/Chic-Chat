@@ -15,6 +15,7 @@ export default function Chat() {
     const [chatIdNow, setChatIdNow] = useState();
     const socket = useRef();
     const [userId, setUserId] = useState(null);
+    const [realTime, setRealTime] = useState()
 
     const location = useLocation();
 
@@ -144,7 +145,7 @@ export default function Chat() {
 
                                     <div className="w-[700px] h-[718px] overflow-y-scroll">
                                         {chatInfo.map((element,index) => (
-                                            <Inbox person={element.partnerInfo.username} lastmessage={"Hello broo"} lastsender={"a"} count_message={20} time={"just now"} focusinbox={focusinbox} setFocusinbox={setFocusinbox} index={index} chatIdNow={chatIdNow} setChatIdNow={setChatIdNow} chatId = {element.id} />
+                                            <Inbox person={element.partnerInfo.username} lastmessage={"Hello broo"} lastsender={"a"} count_message={20} time={"just now"} focusinbox={focusinbox} setFocusinbox={setFocusinbox} index={index} chatIdNow={chatIdNow} setChatIdNow={setChatIdNow} chatId = {element.id} realTime={realTime} setRealTime={setRealTime} />
                                         ))}
                                     </div>
                                 </div>
@@ -155,7 +156,7 @@ export default function Chat() {
                                 bg-white/50 border-l-2  border-l-[#1565D880] 
                                 flex flex-col justify-center items-center ">
                                     {chatInfo.map((e,index)=> (
-                                        <Chatting name={e.partnerInfo.username} chatIdNow={chatIdNow} chatId = {e.id} index={index} socket={socket} conversation={e}/>
+                                        <Chatting name={e.partnerInfo.username} chatIdNow={chatIdNow} chatId = {e.id} index={index} socket={socket} conversation={e} setRealTime={setRealTime}/>
                                     ))}        
                                 
                             </div>

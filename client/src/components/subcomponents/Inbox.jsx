@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
+import { format } from 'timeago.js';
 
-export default function Inbox({ person, lastmessage, lastsender, count_message, time, focusinbox, setFocusinbox, index, chatIdNow, setChatIdNow, chatId }) {
-
+export default function Inbox({ person, lastmessage, lastsender, count_message, time, focusinbox, setFocusinbox, index, chatIdNow, setChatIdNow, chatId, realTime, setRealTime }) {
     const [count, setCount] = useState(count_message);
 
     useEffect(()=>{
@@ -26,11 +26,11 @@ export default function Inbox({ person, lastmessage, lastsender, count_message, 
                     <div className="flex flex-row justify-between w-[528px] h-[107px]">
                         <div className="flex flex-col gap-[5px] h-full justify-center ">
                             <p className="text-[32px] font-medium font-Rubik leading-[38px]">{person}</p>
-                            <div className="text-[20px] text-[#072653] font-Rubik font-medium  leading-[24px] opacity-50">{lastsender == "me" ? "You :" : ""} {lastmessage}</div>
+                            {/* <div className="text-[20px] text-[#072653] font-Rubik font-medium  leading-[24px] opacity-50">{lastsender == "me" ? "You :" : ""} {lastmessage}</div> */}
                         </div>
                         <div className="flex flex-col gap-[5px] h-full justify-center items-end mr-[42px] ">
-                            <p className='text-[20px]  font-Rubik font-normal leading-[120%] text-[#072653] opacity-50'>{time}</p>
-                            <label className={`${lastsender == "me" ? "hidden" : ""} ${count == 0 ? "hidden" : ""} w-[35px] h-[35px] rounded-[50px] bg-[#FF3F3F] flex justify-center items-center text-[20px] text-white font-medium`} >{count}</label>
+                            {/* <p className='text-[20px]  font-Rubik font-normal leading-[120%] text-[#072653] opacity-50'>{format(realTime)}</p> */}
+                            {/* <label className={`${lastsender == "me" ? "hidden" : ""} ${count == 0 ? "hidden" : ""} w-[35px] h-[35px] rounded-[50px] bg-[#FF3F3F] flex justify-center items-center text-[20px] text-white font-medium`} >{count}</label> */}
                         </div>
                     </div>
                 </div>
