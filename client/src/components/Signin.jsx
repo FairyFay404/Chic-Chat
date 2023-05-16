@@ -64,7 +64,7 @@ export default function Signin() {
             setErrorDefault();
 
             setError(true)
-            if(res.data.message == "Email not found"){
+            if(res.data.message == "Enter a valid email address. Please try again."){
                 setErrorEmail(true);
                 setTextError(res.data.message)
             }
