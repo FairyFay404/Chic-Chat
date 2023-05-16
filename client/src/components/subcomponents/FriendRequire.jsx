@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import { baseURL } from '../../baseURL';
-import forge from 'node-forge';
+import forge, { asn1 } from 'node-forge';
 import { encryptDataRSA,decryptDataRSA } from '../../../usersKey';
 
 export default function FriendRequire({ name, idRequest, defaultUser, setDataRequested, }) {
@@ -9,64 +9,77 @@ export default function FriendRequire({ name, idRequest, defaultUser, setDataReq
     const getPublicKeyURL = "/api/rsaKey/";
     const savePublicKey = "/api/aesKey/saveAesKey";
     const getFriendAesKeyURL = "/api/aesKey/";
-    const [friendPublicKey, setFriendPublicKey] = useState("");
+    const [friendPublicKey, setFriendPublicKey] = useState(null);
     const rsa = forge.pki.rsa;
 
-    useEffect(() => {
-    }, [])
 
-    const fetchFriendPublicKey = async (friendDocId)=>{
+    useEffect(()=>{
+        if(friendPublicKey) {
+            const myDocId = sessionStorage.getItem("user-docId");
+            const myAesKeyString = localStorage.getItem("aesKey-"+myDocId);
+            
+            console.log(friendPublicKey);
+            const encryptAesKey = encryptDataRSA(myAesKeyString, friendPublicKey);
 
-        try {
-            const res = await axios.get(baseURL+getPublicKeyURL+friendDocId);
+            console.log(encryptAesKey);
 
-            if(res.data.status == "success"){
-                // set Pem key to state
-                setFriendPublicKey(res.data.publicKey);
-            }
-            else {
-                //can't get public key what to do 
-                console.log(res.data.message);
-            }
-        }
-        catch(err){
-            console.log(err);
-        }
-
-    }
-
-    const saveMyAesKey = async (userDocId,friendDocId,encryptedAesKey) => {
-        /* fetching */
-        const res = await axios.post(baseURL+savePublicKey, {
-            userDocId,
-            friendDocId,
-            encryptedAesKey
-        });
-
-        if(res.data.status == "fail"){
-            console.log(res.data.message);
-            return;
-        }
-    }
-
-    const getFriendAesKey = async (friendDocId,userDocId) => {
-        /* fetching data */
-        const res = await axios.post(baseURL+getFriendAesKeyURL,{
-            userDocId,
-            friendDocId
-        });
+            const saveMyAesKey = async (userDocId,friendId,encryptedAesKey) => {
+                try {
+                    /* fetching */
+                    const res = await axios.post(baseURL+savePublicKey, {
+                        userDocId,
+                        friendId,
+                        encryptedAesKey
+                    });
         
-        if(res.data.status == "success"){
-            /* decrypt aes key by user's private key */
-            const myDocId = sessionStorage.getItem("user-DocId");
-            const privateKeyPem = localStorage.getItem("privateKey-"+myDocId);
-            const friendAesKey = decryptDataRSA(res.data.aesKeyEncrypted,privateKeyPem);
-            localStorage.setItem("aesKey-"+friendDocId, JSON.stringify(friendAesKey));
-            return;
-        }
-    }
+                    if(res.data.status == "fail"){
+                        console.log(res.data.message);
+                        return;
+                    }
+                } catch (err) {
+                    console.log(err);
+                }
+        
+            }
 
-    const handleAccept = async () => {
+            const getFriendAesKey = async (friendId,userDocId) => {
+                /* fetching data */
+        
+                try {
+        
+                    const res = await axios.post(baseURL+getFriendAesKeyURL,{
+                        userDocId,
+                        friendId
+                    });
+                    
+                    if(res.data.status == "success"){
+                        /* decrypt aes key by user's private key */
+                        const myDocId = sessionStorage.getItem("user-DocId");
+                        const privateKeyPem = localStorage.getItem("privateKey-"+myDocId);
+                        const friendAesKey = decryptDataRSA(res.data.aesKeyEncrypted,privateKeyPem);
+                        localStorage.setItem("friendAesKey-"+friendId, JSON.stringify(friendAesKey));
+                        return;
+                    }
+                    
+                } catch (err) {
+                    console.log(err);
+                }   
+        
+            }
+
+            /* part for send encrypt aes key to firebase */
+            saveMyAesKey(myDocId,idRequest,encryptAesKey);
+
+            /* part for get encrypt aes key of friend */
+            /* & */
+            /* part for decrypt aes key of friend by user-privateKey */
+            getFriendAesKey(idRequest,myDocId);
+        }
+
+    },[friendPublicKey])
+
+
+    const handleAccept = () => {
         const urlchangeStatusRequest = baseURL + "/api/user/changeStatusRequest"
         const fetchchangeStatusRequest = async () => {
             const res = await axios.post(urlchangeStatusRequest, {
@@ -76,23 +89,45 @@ export default function FriendRequire({ name, idRequest, defaultUser, setDataReq
             })
             setDataRequested(res.data)
         }
-        await fetchchangeStatusRequest()
+
+        const fetchFriendPublicKey = async (friendDocId)=>{
+
+            try {
+                const res = await axios.get(baseURL+getPublicKeyURL+friendDocId);
+    
+                if(res.data.status == "success"){
+                    // set Pem key to state
+                    setFriendPublicKey(res.data.publicKey);
+                    console.log(res.data.publicKey);
+                    return;
+                }
+                else {
+                    //can't get public key what to do 
+                    console.log(res.data.message);
+                    return;
+                }
+            }
+            catch(err){
+                console.log(err);
+            }
+    
+        }
+        fetchchangeStatusRequest();
 
         /* part for get public key */
-        const myDocId = sessionStorage.getItem("user-DocId");
-        const myAesKeyString = localStorage.getItem("aesKey-"+myDocId);
-        await fetchFriendPublicKey(idRequest);
+        fetchFriendPublicKey(idRequest);
 
         /* part for encrypt aesKey of user by friend's public key */
-        const encryptAesKey = await encryptDataRSA(myAesKeyString, friendPublicKey);
+        //console.log(friendPublicKey);
+        // const encryptAesKey = encryptDataRSA(myAesKeyString, friendPublicKey);
 
         /* part for send encrypt aes key to firebase */
-        await saveMyAesKey(myDocId,idRequest,encryptAesKey);
+        // await saveMyAesKey(myDocId,idRequest,encryptAesKey);
 
         /* part for get encrypt aes key of friend */
         /* & */
         /* part for decrypt aes key of friend by user-privateKey */
-        await getFriendAesKey(idRequest,myDocId);
+        // await getFriendAesKey(idRequest,myDocId);
 
         
     }

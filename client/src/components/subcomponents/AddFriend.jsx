@@ -1,19 +1,64 @@
 import axios from 'axios';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { baseURL } from '../../baseURL';
+import { encryptDataRSA } from '../../../usersKey';
 
 export default function AddFriend({name,isFriend, myId, friendsId}) {
     const [valueisFriend, setValueisFriend] = useState(isFriend);
+    const [friendPublicKey, setFriendPublicKey] = useState(null);
     
+
+    useEffect(()=>{
+        if(friendPublicKey){
+            /* 2. get my aesKey */
+            const myAesKeyString = localStorage.getItem("aesKey-"+myId);
+            /* 3. encrypted my aes with friend public key */
+            const encryptedAesKey = encryptDataRSA(myAesKeyString, friendPublicKey);
+
+            const saveMyAesKeyURL = baseURL + "/api/aesKey/saveAesKey";
+            const saveMyAesKey = async (userDocId,friendId,encryptedAesKey) =>{
+                const res = await axios.post(saveMyAesKeyURL,{
+                    userDocId,
+                    friendId,
+                    encryptedAesKey
+                }); 
+            }
+
+            /* 4. save encrypted aes key to firebase */
+            saveMyAesKey(myId,friendsId,encryptedAesKey);
+        }
+    },[friendPublicKey])
 
     const handleAddfriend = () => {
         setValueisFriend(true)
         const urlAddfriend = baseURL + "/api/user/addFriend"
-        axios.post(urlAddfriend, {
-            myId : myId,
-            friendId : friendsId
-        })
+        const addFriend = async ()=>{
+            try {
+                const res = await axios.post(urlAddfriend, {
+                    myId : myId,
+                    friendId : friendsId
+                });
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        addFriend();
         // call API update isFriend with name(document id friend)
+        /* after add friend we will get my aes key and encrypt it will friend public key */
+        /* and then push it in firebase  */
+        /* 1. fetching public of friend */
+        const getFriendPublicKeyURL = baseURL + "/api/rsaKey/";
+        const getFriendPublicKey = async () => {
+            /* fetching data */
+            const res = await axios.get(getFriendPublicKeyURL+friendsId);
+            
+            if(res.data.status == "success"){
+                setFriendPublicKey(res.data.publicKey);
+                return;
+            }
+        }
+
+        getFriendPublicKey();
     }
 
 

@@ -39,7 +39,7 @@ router.post('/saveAesKey', async (req, res)=>{
         /* create JSON Data */
         const aesKeyJson = {
             friendId: req.body.friendId,
-            encryptedAesKey: req.body.encryptedAesKey,
+            encryptedAesKey: req.body.encryptedAesKey
         }
 
         /* update Aes key */
