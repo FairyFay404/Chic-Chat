@@ -83,10 +83,11 @@ export default function HomeProfile() {
         e.preventDefault();
         setStatusEdit(!statusEdit)
         setStatusError(false)
+        setErrorDefault()
     }
 
     const handleSave = (e) => {
-        setErrorDefault
+        setErrorDefault()
         e.preventDefault();
         console.log(username + password + email)
 
@@ -245,10 +246,10 @@ export default function HomeProfile() {
                                     
                                 </div>
                                 <div className={`${errorPassword ? "border-[#FF0000] border-[3px]" : "focus:border-[3px] focus:border-[#178AAE] "} 
-                                    w-[460px] h-[59px] bg-white bg-opacity-70 rounded-[20px] ps-[28px] font-medium text-[20px] text-[#072653] flex items-center`} >
+                                    relative w-[460px] h-[59px] bg-white bg-opacity-70 rounded-[20px] ps-[28px] font-medium text-[20px] text-[#072653] flex items-center`} >
                                     <label className='pe-[13px] text-[24px] text-[#000000] '>Password :</label>
                                     {statusEdit ?
-                                        <input type={passwordVisible ? "text" : "password"} className='bg-transparent ps-[10px] outline-0' value={password} placeholder="Enter your new password" onChange={e => { setPassword(e.target.value) }} /> :
+                                        <input type={passwordVisible ? "text" : "password"} className='bg-transparent ps-[10px] outline-0 placeholder:text-[16px]' value={password} placeholder="Enter your new password" onChange={e => { setPassword(e.target.value) }} /> :
                                         <input type="password" className='bg-transparent ps-[10px] text-[#07265380] outline-0' value={defaultUser.password} placeholder="Enter your new password" onChange={e => { setPassword(e.target.value) }} disabled />
                                     }
                                     <div className={` ${statusEdit ? "flex absolute  right-[46px]"  : "hidden"}  `}  onClick={() => setPasswordVisible(!passwordVisible)}>
@@ -257,9 +258,7 @@ export default function HomeProfile() {
                                         }
                                     </div>
                                 </div>
-                                <div className={` ${statusEdit ? " relative w-[460px] h-[75px] bg-white bg-opacity-70 rounded-[20px] ps-[28px] font-medium text-[20px] text-[#072653] flex items-center"
-                                : "hidden"}  `}
-                                >
+                                <div className={` ${statusEdit ? `${errorConfirmPassword ? "border-[#FF0000] border-[3px]" : ""} relative w-[460px] h-[75px] bg-white bg-opacity-70 rounded-[20px] ps-[28px] font-medium text-[20px] text-[#072653] flex items-center`: "hidden"}`}>
                                     <div className="flex flex-row items-center">
                                         <label className='text-[24px] text-[#000000] w-[123px] '>Confirm Password</label>
                                         <label className='pe-[13px] text-[24px] text-[#000000] w-[10px] '>:</label>
@@ -271,10 +270,10 @@ export default function HomeProfile() {
                                         }
                                     </div>
                                 </div>
-                                <div className="w-[460px] h-[59px] bg-white bg-opacity-70 rounded-[20px]
+                                <div className={`w-[460px] h-[59px] bg-white bg-opacity-70 rounded-[20px]
                                 ps-[28px] font-medium text-[20px] text-[#072653]
-                                flex items-center
-                                ">
+                                flex items-center ${errorEmail ? "border-[#FF0000] border-[3px]" : ""}
+                                `}>
                                     <label className='pe-[13px] text-[24px] text-[#000000] '>E-mail :</label>
                                     {statusEdit ?
                                         <input type="email" className='bg-transparent ps-[10px] outline-0 ' value={email} placeholder="Enter your new email" onChange={e => { setEmail(e.target.value) }} /> :
