@@ -4,7 +4,7 @@ import { baseURL } from '../../baseURL';
 import forge, { asn1 } from 'node-forge';
 import { encryptDataRSA,decryptDataRSA } from '../../../usersKey';
 
-export default function FriendRequire({ name, idRequest, defaultUser, setDataRequested, }) {
+export default function FriendRequire({ name, idRequest, defaultUser, setDataRequested, noti_number, setNotiNumber }) {
 
     const getPublicKeyURL = "/api/rsaKey/";
     const savePublicKey = "/api/aesKey/saveAesKey";
@@ -88,6 +88,7 @@ export default function FriendRequire({ name, idRequest, defaultUser, setDataReq
                 friendId: idRequest
             })
             setDataRequested(res.data)
+            setNotiNumber(noti_number-1)
         }
 
         const fetchFriendPublicKey = async (friendDocId)=>{
@@ -141,6 +142,7 @@ export default function FriendRequire({ name, idRequest, defaultUser, setDataReq
                 friendId: idRequest
             })
             setDataRequested(res.data)
+            setNotiNumber(noti_number-1)
         }
         fetchchangeStatusRequest()
     }

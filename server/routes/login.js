@@ -76,7 +76,7 @@ router.post('/', async (req, res)=> {
             })
         }
         else {
-            res.status(200).json({status: "fail", message: "Email not found"})
+            res.status(200).json({status: "fail", message: "Enter a valid email address. Please try again."})
             return;
         }
     }

@@ -3,7 +3,7 @@ import FriendRequire from './FriendRequire';
 import axios from 'axios';
 import { baseURL } from '../../baseURL'
 
-export default function FriendPopup({ trigger, setTrigger, defaultUser, dataRequested, setDataRequested }) {
+export default function FriendPopup({ trigger, setTrigger, defaultUser, dataRequested, setDataRequested, noti_number, setNotiNumber }) {
     const [friendRequest, setFriendRequest] = useState([])
 
     // get all onRequest for show in popup requstion be friend
@@ -18,6 +18,7 @@ export default function FriendPopup({ trigger, setTrigger, defaultUser, dataRequ
                     temp.push({username : res.data.username, idRequest: idRequest})
                 }))
                 setFriendRequest(temp);
+                setNotiNumber(temp.length)
             }
             getFriendRequestId()
         }
@@ -48,7 +49,7 @@ export default function FriendPopup({ trigger, setTrigger, defaultUser, dataRequ
                         <div className="h-[254px] ">
                             {
                                 friendRequest?.map((friend, i) => {
-                                    return <FriendRequire name={friend.username} idRequest={friend.idRequest} defaultUser={defaultUser} key={i} setDataRequested={setDataRequested} />
+                                    return <FriendRequire name={friend.username} idRequest={friend.idRequest} defaultUser={defaultUser} key={i} setDataRequested={setDataRequested} noti_number={noti_number} setNotiNumber={setNotiNumber} />
                                 })
 
                             }

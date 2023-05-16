@@ -20,13 +20,18 @@ export default function HomeProfile() {
     const [textError, setTextError] = useState("");   
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [confirmpasswordVisible, setConfirmPasswordVisible] = useState(false);
-    const [noti_number, setNotiNumber] = useState("5");
+    const [noti_number, setNotiNumber] = useState(0);
     const [buttonPopup, setButtonPopup] = useState(0);
 
     const [defaultUser, setDefaultUser] = useState({})
     const [allconversation, setAllconversation] = useState([]) // (similarly friend)
     const [dataRequested, setDataRequested] = useState()
     const [dataSearch, setDataSearch] = useState([])
+
+    const [errorUsername, setErrorUsername] = useState(false)
+    const [errorPassword, setErrorPassword] = useState(false)
+    const [errorConfirmPassword, setErrorConfirmPassword] = useState(false)
+    const [errorEmail, setErrorEmail] = useState(false)
 
     const urlgetInfo = baseURL + "/api/user/getInfo"
     const urlupdateInfo = baseURL + "/api/user/updateInfo"
@@ -67,7 +72,12 @@ export default function HomeProfile() {
         console.log(allconversation)
     }, [allconversation])
 
-
+    const setErrorDefault = () => {
+        setErrorEmail(false)
+        setErrorPassword(false)
+        setErrorConfirmPassword(false)
+        setErrorUsername(false)
+    }
 
     const handleEdit = (e) => {
         e.preventDefault();
@@ -76,12 +86,15 @@ export default function HomeProfile() {
     }
 
     const handleSave = (e) => {
+        setErrorDefault
         e.preventDefault();
         console.log(username + password + email)
 
         if (confirmpassword != password) {
             setStatusError(true)
             setTextError("Password not match. Please try again.")
+            setErrorPassword(true)
+            setErrorConfirmPassword(true)
         } else {
             axios.post(urlupdateInfo, {
                 username: username,
@@ -93,7 +106,16 @@ export default function HomeProfile() {
                 }
             }).then((res) => {
                 if (res.data.status == "fail") {
+                    // set Default Error of each input for reset Error
                     setStatusError(true)
+                    if (res.data.type == "username") {
+                        setErrorUsername(true)
+                    } else if (res.data.type == "password") {
+                        setErrorPassword(true)
+                    }else if (res.data.type == "email") {
+                        setErrorEmail(true)
+                    }
+                        setTextError(res.data.message);
                     setTextError(res.data.message)
                 } else {
                     alert(res.data.message)
@@ -147,7 +169,7 @@ export default function HomeProfile() {
                                         <h1 className='text-[40px] text-white font-semibold'>Friend</h1>
                                         <div className="relative">
                                             <button onClick={() => setButtonPopup(true)}><img src="/Notification.png" /></button>
-                                            <div className={` ${noti_number ? "" : "hidden"}w-[35px] h-[35px] bg-[#FF3F3F] rounded-[50%] ms-[15px] text-white flex justify-center items-center absolute top-2 left-7`}>
+                                            <div className={` ${noti_number != 0  ? "" : "hidden"} w-[35px] h-[35px] bg-[#FF3F3F] rounded-[50%] ms-[15px] text-white flex justify-center items-center absolute top-2 left-7`}>
                                                 <h1>{noti_number}</h1>
                                             </div>
                                         </div>
@@ -180,7 +202,7 @@ export default function HomeProfile() {
                                     <div className={` ${statusSearch ? "hidden" : ""}`}>
                                         {
                                             allconversation?.map((conversation, i) => {
-                                                return <Friendbox name={conversation.partnerInfo.username} conversationId={conversation.id} count_message={3} />
+                                                return <Friendbox name={conversation.partnerInfo.username} conversationId={conversation.id} count_message={3} key={i}/>
                                             })
                                         }
                                         {/* <Friendbox name={"Meaw"} count_message={5} />
@@ -209,19 +231,21 @@ export default function HomeProfile() {
                             <img src="/MyProfile.png" alt="" />
                             <h1 className='text-[40px] font-medium mb-[39px]'>{defaultUser.username}</h1>
                             <div className="grid gap-[11px]">
-                                <div className="w-[460px] h-[59px] bg-white bg-opacity-70 rounded-[20px]
-                                ps-[28px] font-medium text-[20px] text-[#072653]
-                                flex items-center">
+                                <div className={`${errorUsername ? "border-[#FF0000] border-[3px]" : "focus:border-[3px] focus:border-[#178AAE] "} 
+                                w-[460px] h-[59px] bg-white bg-opacity-70 rounded-[20px] ps-[28px] font-medium text-[20px] text-[#072653] flex items-center`} >
+
                                     <label className='pe-[13px] text-[24px] text-[#000000] '>Username :</label>
                                     {statusEdit ?
+                                        //<input type="text" className={`'bg-transparent ps-[10px] outline-0' ${errorUsername ? "border-[#FF0000] border-[3px]" : "focus:border-[3px] focus:border-[#178AAE] "} 
+                                        // w-[680px] h-[76px] rounded-[20px] ps-[28px] pr-[30px] shadow-[0_10px_10px_rgba(0,0,0,0.25)]`} 
+                                        // value={username} placeholder="Enter your new username" onChange={e => { setUsername(e.target.value) }} /> :
                                         <input type="text" className='bg-transparent ps-[10px] outline-0' value={username} placeholder="Enter your new username" onChange={e => { setUsername(e.target.value) }} /> :
                                         <label className='ps-[10px] text-[20px] text-[#07265380] '>{defaultUser.username}</label>
                                     }
                                     
                                 </div>
-                                <div className="relative w-[460px] h-[59px] bg-white bg-opacity-70 rounded-[20px]
-                                ps-[28px] font-medium text-[20px] text-[#072653]
-                                flex items-center">
+                                <div className={`${errorPassword ? "border-[#FF0000] border-[3px]" : "focus:border-[3px] focus:border-[#178AAE] "} 
+                                    w-[460px] h-[59px] bg-white bg-opacity-70 rounded-[20px] ps-[28px] font-medium text-[20px] text-[#072653] flex items-center`} >
                                     <label className='pe-[13px] text-[24px] text-[#000000] '>Password :</label>
                                     {statusEdit ?
                                         <input type={passwordVisible ? "text" : "password"} className='bg-transparent ps-[10px] outline-0' value={password} placeholder="Enter your new password" onChange={e => { setPassword(e.target.value) }} /> :
@@ -276,7 +300,7 @@ export default function HomeProfile() {
                         </div>
 
                     </div>
-                    <FriendPopup trigger={buttonPopup} setTrigger={setButtonPopup} defaultUser={defaultUser} dataRequested={dataRequested} setDataRequested={setDataRequested}></FriendPopup>
+                    <FriendPopup trigger={buttonPopup} setTrigger={setButtonPopup} defaultUser={defaultUser} dataRequested={dataRequested} setDataRequested={setDataRequested} noti_number={noti_number} setNotiNumber={setNotiNumber}></FriendPopup>
                 </div>
 
             </div>
