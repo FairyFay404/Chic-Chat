@@ -9,7 +9,7 @@ import { baseURL } from '../baseURL'
 
 export default function HomeProfile() {
     const [username, setUsername] = useState("Eiei")
-    const [password, setPassword] = useState("123456")
+    const [password, setPassword] = useState("")
     const [confirmpassword, setConfirmpassword] = useState("")
     const [email, setEmail] = useState("bob@mail.com")
     const [search, setSearch] = useState("")
@@ -44,7 +44,6 @@ export default function HomeProfile() {
             })
             setDefaultUser(res.data.user) // personal information (id, username, password, )
             setUsername(res.data.user.username)
-            setPassword(res.data.user.password)
             setEmail(res.data.user.email)
 
             // All conversation of **USER** (similarly friend)
@@ -249,9 +248,10 @@ export default function HomeProfile() {
                                     relative w-[460px] h-[59px] bg-white bg-opacity-70 rounded-[20px] ps-[28px] font-medium text-[20px] text-[#072653] flex items-center`} >
                                     <label className='pe-[13px] text-[24px] text-[#000000] '>Password :</label>
                                     {statusEdit ?
-                                        <input type={passwordVisible ? "text" : "password"} className='bg-transparent ps-[10px] outline-0 placeholder:text-[16px]' value={password} placeholder="Enter your new password" onChange={e => { setPassword(e.target.value) }} /> :
-                                        <input type="password" className='bg-transparent ps-[10px] text-[#07265380] outline-0' value={defaultUser.password} placeholder="Enter your new password" onChange={e => { setPassword(e.target.value) }} disabled />
+                                        <input type={passwordVisible ? "text" : "password"} className='bg-transparent ps-[10px] outline-0 placeholder:text-[16px]' value={password} placeholder="Enter your new password" onChange={e => { setPassword(e.target.value) }} /> : 
+                                        <input type="password" className='bg-transparent ps-[10px] text-[#07265380] outline-0' value={"**********"} placeholder="Enter your new password" onChange={e => { setPassword(e.target.value) }} disabled />
                                     }
+
                                     <div className={` ${statusEdit ? "flex absolute  right-[46px]"  : "hidden"}  `}  onClick={() => setPasswordVisible(!passwordVisible)}>
                                         {
                                             passwordVisible ? <EyeOutlined className='  bg-white bg-opacity-80 text-[28px]'/> : <EyeInvisibleOutlined className='  bg-white bg-opacity-80 text-[28px]'/>

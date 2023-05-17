@@ -87,9 +87,10 @@ router.post('/getInfo', async (req, res) => {
         const querySnapShot = await getDocs(queryData);
 
         querySnapShot.forEach((user) => {
-            const bytes = CryptoJS.AES.decrypt(user.data().password, secretAES);
-            const plainText = bytes.toString(CryptoJS.enc.Utf8);
-            return res.status(200).json({ stataus: "success", user: { id: user.id, email: user.data().email, username: user.data().username, friends: user.data().friends, onRequest: user.data().onRequest, password: plainText } })
+            // don't do because about confidentiality
+            // const bytes = CryptoJS.AES.decrypt(user.data().password, secretAES);
+            // const plainText = bytes.toString(CryptoJS.enc.Utf8);
+            return res.status(200).json({ stataus: "success", user: { id: user.id, email: user.data().email, username: user.data().username, friends: user.data().friends, onRequest: user.data().onRequest } })
         })
     } catch (err) {
         return res.status(200).json({ status: "fail", message: err.message })
