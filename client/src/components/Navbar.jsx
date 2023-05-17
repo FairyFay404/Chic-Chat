@@ -38,7 +38,7 @@ export default function Navbar() {
     }
 
     const backToHome = () => {
-        alert("back to home")
+        // alert("back to home")
         navigate('/home')
         // 
     }
