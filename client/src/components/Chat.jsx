@@ -5,6 +5,8 @@ import Chatting from './subcomponents/Chatting'
 import { io } from "socket.io-client";
 import axios from 'axios';
 import { useLocation } from "react-router-dom";
+import { baseURL } from '../baseURL';
+import { decryptDataRSA } from '../../usersKey';
 
 export default function Chat() {
     const [friendListId, setFriendListId] = useState([]);
@@ -15,6 +17,7 @@ export default function Chat() {
     const [chatIdNow, setChatIdNow] = useState();
     const socket = useRef();
     const [userId, setUserId] = useState(null);
+    const [oldChatInfoLength, setOldChatInfoLength] = useState(0);
 
     const location = useLocation();
 
@@ -32,27 +35,38 @@ export default function Chat() {
 
     }
 
-    const updateFriendId = async () =>{
-        const oldChatInfoLength = chatInfo.length;
-        const userDocId = sessionStorage.getItem("user-docId");
-        await getConversation(userDocId);
-        
-        /* check if length is not the same*/
-        if( oldChatInfoLength != chatInfo.length) {
-            /* get friendId for check you already have his/her aes key */
-            const friendNotHaveKey = chatInfo.map((element) => {
-                let friendAesKey = localStorage.getItem("aesKey-"+element.partnerInfo.id);
-                /* if we not have aeskey of that user but we are friend then keep friendId in array */
-                if(friendAesKey == null){
-                    return element.partnerInfo.id;
-                }
-            })
-            console.log(friendNotHaveKey);
-            /* now we get array of friend that don't have aeskey  */
-            /* if(friendAesKey) */
-            return friendNotHaveKey;
+    const getFriendAesKey = async (friendId,userDocId) => {
+        /* fetching data */
+        const getFriendAesKeyURL = "/api/aesKey/";
+        try {
+
+            const res = await axios.post(baseURL+getFriendAesKeyURL,{
+                userDocId,
+                friendId
+            });
             
-        }
+            if(res.data.status == "success"){
+                /* decrypt aes key by user's private key */
+                const myDocId = sessionStorage.getItem("user-docId");
+                const privateKeyPem = localStorage.getItem("privateKey-"+myDocId);
+                console.log(privateKeyPem);
+                const friendAesKey = decryptDataRSA(res.data.aesKeyEncrypted,privateKeyPem);
+                localStorage.setItem("friendAesKey-"+friendId, friendAesKey);
+                return;
+            }
+            
+        } catch (err) {
+            console.log(err);
+        }   
+
+    }
+
+    const updateFriendId = () =>{
+
+        const newOldChatInfoLength = chatInfo.length;
+        console.log("we are here! ")
+        setOldChatInfoLength(newOldChatInfoLength);
+        
     }
 
     /* first time when this page is rendering */
@@ -86,20 +100,57 @@ export default function Chat() {
     useEffect(() => {
 
         /* get length of friend for fetching data */
-        const friendCount = chatInfo.length;
         const userDocId = sessionStorage.getItem("user-docId");
 
-        /* have friend */
-        if (friendCount != 0) {
-            const friendIdList = chatInfo.map((element) => {
-                return element.member.find((user) => user != userDocId)
-            });
-            console.log(friendIdList)
+        /* check if length is not the same*/
+        if( oldChatInfoLength != chatInfo.length) {
 
-            // const getFriendInfo = axios.get()
+            console.log(oldChatInfoLength)
+            console.log(chatInfo.length)
+            /* get friendId for check you already have his/her aes key */
+            const friendNotHaveKey = chatInfo.map((element) => {
+                let friendAesKey = localStorage.getItem("friendAesKey-"+element.partnerInfo.id);
+                /* if we not have aeskey of that user but we are friend then keep friendId in array */
+                if(friendAesKey == null){
+                    return element.partnerInfo.id;
+                }
+            })
+
+            /* if we don't have key of that friend  */
+            if(friendNotHaveKey.length != undefined && friendNotHaveKey > 0){
+                const promises = [];
+                
+                friendNotHaveKey.forEach((friendId)=>{
+                    const promise = getFriendAesKey(friendId,userDocId);
+                    /* push promise in array  */
+                    promises.push(promise);
+                });
+
+                /* waiting for get friendAesKey */
+                try {
+                    Promise.all(promises);
+                } catch (err) { 
+                    /* if err  */
+                    console.log(err);
+                }
+            }
+
+            console.log(friendNotHaveKey);
+            /* now we get array of friend that don't have aeskey  */
+            /* if(friendAesKey) */
+            return;
+            
         }
 
+
     }, [chatInfo])
+
+    useEffect(()=>{
+        /* when length of chat info are updated */
+        const userDocId = sessionStorage.getItem("user-docId");
+        getConversation(userDocId);
+
+    },[oldChatInfoLength])
 
     useEffect(() => {
 

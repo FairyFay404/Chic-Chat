@@ -3,6 +3,7 @@ import MessageReceive from './MessageReceive';
 import MessageSend from './MessageSend';
 import axios from 'axios';
 import { baseURL } from '../../baseURL';
+import { encryptDataAES,decryptDataAES } from '../../../usersKey';
 
 
 
@@ -87,11 +88,15 @@ export default function Chatting({ name, chatIdNow, chatId, index, socket, conve
         e.preventDefault();
         
         const receiverId = conversation.member.find((user)=> user !== userId);
+        /* get Aes Key of receiverId by localstorage */
+        const receiverIdAesKeyString = localStorage.getItem("friendAesKey-"+receiverId);
+        const receiverIdAesKeyObj = JSON.parse(receiverIdAesKeyString);
+        const cipherText = encryptDataAES(receiverIdAesKeyObj.aesKey, receiverIdAesKeyObj.iv, newmessage);
 
         socket.current.emit("sendMessage", {
             senderId: userId, 
             receiverId, 
-            text: newmessage
+            text: cipherText
         })
 
         const saveMessage = async () => {
@@ -99,7 +104,7 @@ export default function Chatting({ name, chatIdNow, chatId, index, socket, conve
 
                 const message = {
                     conversationId: conversation.id,
-                    text: newmessage, 
+                    text: cipherText, 
                     senderId: userId,
                 }
 
@@ -141,6 +146,7 @@ export default function Chatting({ name, chatIdNow, chatId, index, socket, conve
                 {messages.map((message)=> {
                     /*  check is date ?  */
                     let time; 
+                    const userId = sessionStorage.getItem("user-docId");
                     if(message.createAt instanceof Date) {
                         time = message.createAt;
                     }
@@ -150,10 +156,17 @@ export default function Chatting({ name, chatIdNow, chatId, index, socket, conve
                     }
 
                     if(message.senderId == userId){
-                        return <div ref={scrollRef}> <MessageSend message={message.text} time={time}/> </div>
+                        const friendId = conversation.member.find((user) => user !== userId);
+                        const aesKeyString = localStorage.getItem("friendAesKey-"+friendId);    
+                        const aesKeyObj = JSON.parse(aesKeyString);
+                        const text = decryptDataAES(aesKeyObj.aesKey, aesKeyObj.iv, message.text);
+                        return <div ref={scrollRef}> <MessageSend message={text} time={time}/> </div>
                     }
                     else{
-                        return <div ref={scrollRef}> <MessageReceive message={message.text} time={time}/> </div>
+                        const aesKeyString = localStorage.getItem("aesKey-"+userId);
+                        const aesKeyObj = JSON.parse(aesKeyString);
+                        const text = decryptDataAES(aesKeyObj.aesKey, aesKeyObj.iv, message.text);
+                        return <div ref={scrollRef}> <MessageReceive message={text} time={time}/> </div>
                     }
                 })}
             </div>
