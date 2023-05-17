@@ -54,10 +54,10 @@ export default function FriendRequire({ name, idRequest, defaultUser, setDataReq
                     
                     if(res.data.status == "success"){
                         /* decrypt aes key by user's private key */
-                        const myDocId = sessionStorage.getItem("user-DocId");
                         const privateKeyPem = localStorage.getItem("privateKey-"+myDocId);
+                        console.log(privateKeyPem);
                         const friendAesKey = decryptDataRSA(res.data.aesKeyEncrypted,privateKeyPem);
-                        localStorage.setItem("friendAesKey-"+friendId, JSON.stringify(friendAesKey));
+                        localStorage.setItem("friendAesKey-"+friendId, friendAesKey);
                         return;
                     }
                     

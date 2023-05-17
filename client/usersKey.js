@@ -10,9 +10,10 @@ import forge from 'node-forge';
 /* function for add user key in arrays */
 
 export const encryptDataAES = (aesKey, iv, plaintext) => {
+    const plaintextUTF8 = forge.util.encodeUtf8(plaintext);
     const cipherObj = forge.cipher.createCipher('AES-CBC', aesKey);
     cipherObj.start({iv: iv});
-    cipherObj.update(forge.util.createBuffer(plaintext));
+    cipherObj.update(forge.util.createBuffer(plaintextUTF8));
     cipherObj.finish();
     const encryptedData = cipherObj.output.getBytes();
     return encryptedData;
@@ -24,7 +25,8 @@ export const decryptDataAES = (aesKey, iv, ciphertext) => {
     decipher.update(forge.util.createBuffer(ciphertext));
     decipher.finish();
     const decryptedData = decipher.output.getBytes();
-    return decryptedData;
+    const decryptText = forge.util.decodeUtf8(decryptedData);
+    return decryptText;
 } 
 
 export const encryptDataRSA = (plaintext, publicKeyPem) => {
